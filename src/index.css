@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --color-brand-cyan: #06b6d4;
+  --color-brand-emerald: #10b981;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: #020617; /* Slate-950 */
+    color: #f8fafc; /* Slate-50 */
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+  
+  /* Modern Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #020617;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 9999px;
+    border: 2px solid #020617;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+  }
+}
+
+/* Custom Neon/Glow styles */
+.glow-emerald {
+  box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.25);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.25);
+}
+
+.glow-glow {
+  box-shadow: 0 0 40px -10px rgba(6, 182, 212, 0.15), 0 0 40px -10px rgba(16, 185, 129, 0.15);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+}
+
+.text-glow-emerald {
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Float Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1) translate(0px, 0px);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.15) translate(20px, -20px);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 10s ease-in-out infinite;
+}
+
+@keyframes pulse-slow-reverse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1.1) translate(0px, 0px);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.9) translate(-30px, 20px);
+  }
+}
+
+.animate-pulse-slow-reverse {
+  animation: pulse-slow-reverse 12s ease-in-out infinite;
+}
+
+/* Glassmorphism utility classes */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-navbar {
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
