@@ -7,15 +7,18 @@ import TalentModal from './components/TalentModal';
 import RegisterForm from './components/RegisterForm';
 import TalentProfile from './components/TalentProfile';
 import AdminPanel from './components/AdminPanel';
+// 🌟 完美引入的登入/註冊元件與會員控制台元件
+import AuthForm from './components/AuthForm';
+import UserDashboard from './components/UserDashboard';
 
-// ─── Rich Mock Data ───────────────────────────────────────────────────────────
+// ─── Rich Mock Data (10 Rich Talents Included) ───────────────────────────────
 const MOCK_TALENTS = [
   {
     id: 1,
-    name: '黃映瑄',
+    name: '陳毛豆',
     title: '前端工程師 / 社群企劃',
     motto: '熱愛學習新技術，用程式解決生活中的大小事。',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
     email: 'huang@example.com',
     yearsOfExp: 2,
     expectedSalary: '月薪 45,000–60,000',
@@ -58,11 +61,11 @@ const MOCK_TALENTS = [
       { role: '軟體工程師實習生', company: '台灣大哥大', period: '2020.07 – 2021.02' },
     ],
     education: [{ degree: '電機工程學系', school: '國立台灣大學', year: '2016 – 2020' }],
-    skills: ['Node.js', 'React', 'TypeScript', 'AI 溝通 / 提示詞工程', 'SQL / Database'],
+    skills: ['Node.js', 'React', 'TypeScript', 'Docker', 'AWS'],
     portfolio: [
       {
         title: '微服務訂單管理系統',
-        description: '為電商平台設計的微服務架構後端，具備高可用負載均衡、訊息佇列與自動擴縮容能力。',
+        description: '為電商平台設計的微服務架顧後端，具備高可用負載均衡、訊息佇列與自動擴縮容能力。',
         image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
         tags: ['Node.js', 'Docker', 'Redis', 'PostgreSQL'],
       },
@@ -80,7 +83,7 @@ const MOCK_TALENTS = [
     name: '陳建宏',
     title: 'AI 研究員 / 機器學習工程師',
     motto: '深信 AI 不只是工具，更是改變人類思維的革命。',
-    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=400&q=80',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
     email: 'chen@example.com',
     yearsOfExp: 4,
     expectedSalary: '月薪 80,000–110,000',
@@ -93,7 +96,7 @@ const MOCK_TALENTS = [
       { degree: '資訊科學博士班（修業中）', school: '國立陽明交通大學', year: '2023 – 至今' },
       { degree: '資訊工程學系碩士', school: '國立清華大學', year: '2019 – 2021' },
     ],
-    skills: ['Python', 'AI 溝通 / 提示詞工程', 'SQL / Database', 'TypeScript'],
+    skills: ['Python', 'SQL / Database', 'PyTorch', 'LLM Tuning'],
     portfolio: [
       {
         title: '繁體中文情感分析模型',
@@ -110,28 +113,233 @@ const MOCK_TALENTS = [
     ],
     isApproved: true,
   },
+  {
+    id: 4,
+    name: '黃斜豆',
+    title: '全端實習生 / 學生',
+    motto: '沒有解決不了的 Bug，只有不夠肝的工程師！目前努力刷題中。',
+    avatar: '',
+    email: 'shadow@student.edu.tw',
+    yearsOfExp: 0,
+    expectedSalary: '時薪 200–250',
+    bio: '目前是資工系大四學生，熱衷於全端 Web 開發與自動化腳本編寫。熟悉基本網頁技術並積極參與開源社群。個性樂觀、抗壓性強，能快速吸收新知識，目前正努力刷 LeetCode 尋求軟體開發實習機會。',
+    experience: [
+      { role: '校園網路中心助理', company: '大學計算機中心', period: '2023.09 – 至今' }
+    ],
+    education: [{ degree: '資訊工程學系', school: '逢甲大學', year: '2022 – 2026' }],
+    skills: ['Node.js', 'Python', 'HTML / CSS', 'Git'],
+    portfolio: [
+      {
+        title: '智慧校園導覽 App',
+        description: '大三期末專題作品，利用路徑演算法規劃校園內最短步行導覽路線。',
+        image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80',
+        tags: ['Java', 'Android', 'SQLite Studio'],
+      }
+    ],
+    isApproved: false,
+  },
+  {
+    id: 5,
+    name: '林思妤',
+    title: 'UI/UX 設計師 / 前端愛好者',
+    motto: '好的設計能說故事，好的程式碼能賦予它靈魂。',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    email: 'lin.design@example.com',
+    yearsOfExp: 3,
+    expectedSalary: '月薪 50,000–65,000',
+    bio: '專注於使用者經驗（UX）研究與視覺設計（UI）的設計師。擅長使用 Figma 建立完整的設計系統（Design System），並具備良好的 Tailwind CSS 編寫能力，能與前端工程師無縫對接。',
+    experience: [
+      { role: 'UI/UX 設計師', company: '美感數位互動', period: '2022.05 – 至今' }
+    ],
+    education: [{ degree: '商業設計學系', school: '國立臺灣科技大學', year: '2018 – 2022' }],
+    skills: ['Figma', 'UI/UX', 'Tailwind CSS', 'Next.js'],
+    portfolio: [
+      {
+        title: '虛擬貨幣交易所介面優化',
+        description: '耗時三個月進行使用者調研，重新定義數位資產的視覺排版與交易下單操作流暢度。',
+        image: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=800&q=80',
+        tags: ['Figma', 'UIUX Design', 'User Research'],
+      }
+    ],
+    isApproved: true,
+  },
+  {
+    id: 6,
+    name: '張家豪',
+    title: '後端資深工程師 / 資料庫專家',
+    motto: '資料庫優化一條索引，勝過前端重構一萬行。',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+    email: 'chang.db@example.com',
+    yearsOfExp: 7,
+    expectedSalary: '月薪 95,000–130,000',
+    bio: '具備 7 年大型分散式系統開發經驗的後端老手。精通高併發架構設計、微服務架構與關聯式資料庫深度優化。處理過百萬級日活躍用戶數據。',
+    experience: [
+      { role: '資深核心後端工程師', company: '獵豹跨國電商平台', period: '2020.01 – 至今' },
+      { role: '後端工程師', company: '國泰金控數數發中心', period: '2018.02 – 2019.12' }
+    ],
+    education: [{ degree: '資訊管理學系碩士', school: '國立交通大學', year: '2015 – 2017' }],
+    skills: ['MySQL', 'PostgreSQL', 'Golang', 'Redis', 'Kafka'],
+    portfolio: [
+      {
+        title: '分散式巨量日誌收集系統',
+        description: '使用 Golang 開發高吞吐量的數據流核心，每日穩定處理超過億級的日誌行為數據。',
+        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+        tags: ['Golang', 'Kafka', 'Elasticsearch'],
+      }
+    ],
+    isApproved: true,
+  },
+  {
+    id: 7,
+    name: '周杰克',
+    title: 'iOS App 開發工程師',
+    motto: '專注於極致的 Apple 美學與流暢的物理動畫互動。',
+    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=400&q=80',
+    email: 'jay.ios@example.com',
+    yearsOfExp: 3,
+    expectedSalary: '月薪 65,000–80,000',
+    bio: '專注於原生 iOS App 開發，極度熱愛 SwiftUI 與現代化宣告式 UI 開發。追求畫面的流暢刷新率與系統底層效能的平衡。',
+    experience: [
+      { role: 'iOS 工程師', company: '獨立 App 軟體工作室', period: '2023.01 – 至今' }
+    ],
+    education: [{ degree: '數位媒體設計學系', school: '元智大學', year: '2018 – 2022' }],
+    skills: ['Swift', 'SwiftUI', 'CoreData', 'Combine'],
+    portfolio: [
+      {
+        title: '番茄鐘極簡 productivity 工具',
+        description: '上架於 App Store 獲得 4.8 星高評分的質感專注工具，支援動態島與桌面 Widget。',
+        image: 'https://images.unsplash.com/photo-1616763355548-1b606f439f86?auto=format&fit=crop&w=800&q=80',
+        tags: ['SwiftUI', 'Dynamic Island', 'App Store'],
+      }
+    ],
+    isApproved: false,
+  },
+  {
+    id: 8,
+    name: '許婉婷',
+    title: '雲端架構師 / SRE 工程師',
+    motto: '自動化維運是一切軟體優雅穩定運作的基石。',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+    email: 'wt.hsu@example.com',
+    yearsOfExp: 4,
+    expectedSalary: '月薪 85,000–105,000',
+    bio: '擁有 AWS 專家級認證的雲端架構師。專長基礎設施即程式碼（IaC），協助過多個傳統企業將在地伺服器成功無縫搬遷上雲。',
+    experience: [
+      { role: '雲端架構顧問', company: '國際外商雲端整合服務', period: '2022.03 – 至今' }
+    ],
+    education: [{ degree: '通訊工程學系', school: '國立成功大學', year: '2016 – 2020' }],
+    skills: ['AWS', 'Kubernetes', 'CI/CD', 'Terraform'],
+    portfolio: [
+      {
+        title: '跨國多雲自動化備援計畫',
+        description: '運用 Terraform 自動部署異地備援基礎設施，實現災難復原 RTO < 5 分鐘的高可用指標。',
+        image: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=800&q=80',
+        tags: ['Terraform', 'AWS Lambda', 'SRE'],
+      }
+    ],
+    isApproved: true,
+  },
+  {
+    id: 9,
+    name: '吳冠宇',
+    title: '區塊鏈合約工程師',
+    motto: 'Code is Law. 在鏈上的世界裡，容不得任何一絲粗心。',
+    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
+    email: 'wu.crypto@example.com',
+    yearsOfExp: 3,
+    expectedSalary: '月薪 90,000–120,000',
+    bio: '深耕 Web3 生態系的技術開發者，專精以太坊 Solidity 智能合約安全編寫，熟悉各類 DeFi 協議機制，對 EVM 底層有深入的認知。',
+    experience: [
+      { role: '智能合約工程師', company: '新加坡區塊鏈新創基金', period: '2023.05 – 至今' }
+    ],
+    education: [{ degree: '資訊工程學系', school: '國立清華大學', year: '2019 – 2023' }],
+    skills: ['Solidity', 'Web3.js', 'Ethereum', 'Rust', 'Hardhat'],
+    portfolio: [
+      {
+        title: 'DeFi 去中心化質押借貸協議',
+        description: '編寫並通過慢霧科技安全審計的 ERC-20 鎖倉利息合約，鏈上總鎖倉量(TVL)曾突破百萬美金。',
+        image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=80',
+        tags: ['Solidity', 'Hardhat', 'ERC20'],
+      }
+    ],
+    isApproved: true,
+  },
+  {
+    id: 10,
+    name: '林冠亨',
+    title: '技術專案經理 / 敏捷教練',
+    motto: '程式碼用來跟機器溝通，而我的工作是讓技術團隊達成共識。',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80',
+    email: 'andy.liu@example.com',
+    yearsOfExp: 6,
+    expectedSalary: '月薪 80,000–100,000',
+    bio: '具有技術背景的專案經理（PMP），致力於在團隊中推廣 Agile 與 Scrum 敏捷敏捷開發流程，消除部門壁垒並提高產品交付速度。',
+    experience: [
+      { role: 'Technical Project Manager', company: '軟體跨國研發中心', period: '2021.10 – 至今' }
+    ],
+    education: [{ degree: '企業管理學系學士', school: '國立政治大學', year: '2014 – 2018' }],
+    skills: ['Scrum', 'Project Management', 'Jira', 'Agile Engineering'],
+    portfolio: [
+      {
+        title: '大型產品線敏捷轉型引導',
+        description: '帶領 60 人團隊由傳統瀑布式成功轉型為雙週衝刺的 Scrum 架構，使功能上線產出提升 35%。',
+        image: 'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=800&q=80',
+        tags: ['Agile', 'Scrum Coaching', 'Jira Software'],
+      }
+    ],
+    isApproved: false,
+  }
 ];
 
-// ─── App ─────────────────────────────────────────────────────────────────────
+// ─── App Component ───────────────────────────────────────────────────────────
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [view, setView] = useState('marketplace');
   const [talents, setTalents] = useState([]);
   const [selectedTalent, setSelectedTalent] = useState(null);
-  const [modalTalent, setModalTalent] = useState(null); // for the popup modal
+  const [modalTalent, setModalTalent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
+
+  // 👑 模擬純前端的使用者資料庫（預設給一個測試用會員，其綁定了 id: 4 黃斜豆的履歷）
+  const [users, setUsers] = useState([
+    {
+      id: 4, // 對應黃斜豆
+      email: 'shadow@student.edu.tw',
+      password: 'password123',
+    }
+  ]);
+  // 👑 目前登入的用戶，如果是 null 代表訪客未登入
+  const [currentUser, setCurrentUser] = useState(null);
 
   // Load mock + localStorage
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('talents') || '[]');
-    setTalents([...MOCK_TALENTS, ...stored]);
+
+    // 為了防止重複，我們需要過濾掉在 LocalStorage 已經存在的自訂履歷
+    const mergedTalents = [...MOCK_TALENTS];
+    stored.forEach(st => {
+      const idx = mergedTalents.findIndex(m => m.id === st.id);
+      if (idx !== -1) {
+        mergedTalents[idx] = st; // 覆蓋舊資料
+      } else {
+        mergedTalents.push(st); // 新增
+      }
+    });
+    setTalents(mergedTalents);
+
+    // 同步讀取 localStorage 中的註冊使用者
+    const storedUsers = JSON.parse(localStorage.getItem('app_users') || '[]');
+    if (storedUsers.length > 0) {
+      setUsers(prev => [...prev, ...storedUsers.filter(su => !prev.some(p => p.email === su.email))]);
+    }
   }, []);
 
-  // Persist user-submitted talents (id > 1000)
+  // Persist user-submitted talents (或者是已被修改的 mock 履歷)
   useEffect(() => {
-    const toStore = talents.filter(t => t.id > 1000);
-    localStorage.setItem('talents', JSON.stringify(toStore));
+    // 只要是從會員主控台發布或修改過的資料，都持久化保存
+    const customTalents = talents.filter(t => t.id > 10 || t.id === 4);
+    localStorage.setItem('talents', JSON.stringify(customTalents));
   }, [talents]);
 
   // Scroll progress
@@ -145,10 +353,32 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 👑 【修改發布邏輯】 綁定當前登入者，建立/修改履歷後正常返回控制台
   const handlePublish = (newTalent) => {
-    const talent = { ...newTalent, id: Date.now(), isApproved: false };
-    setTalents(prev => [...prev, talent]);
-    setView('marketplace');
+    if (!currentUser) {
+      alert('請先登入帳號再發布履歷！');
+      setView('login');
+      return;
+    }
+
+    // 建立履歷，強制使用目前登入者的 id 與 email 作為識別證
+    const talent = {
+      ...newTalent,
+      id: currentUser.id,
+      email: currentUser.email,
+      isApproved: false // 每次修改或新發布，都需要重新經過管理員審核
+    };
+
+    setTalents(prev => {
+      const exists = prev.some(t => t.id === currentUser.id);
+      if (exists) {
+        return prev.map(t => t.id === currentUser.id ? talent : t);
+      }
+      return [...prev, talent];
+    });
+
+    alert('履歷提交成功！已送交管理員進行上架審核。');
+    setView('dashboard'); // 提交成功後導向至個人的控制面板
   };
 
   const handleViewTalent = (talent) => {
@@ -162,13 +392,19 @@ export default function App() {
     );
   };
 
+  const handleDeleteTalent = (id) => {
+    if (window.confirm('確定要永久刪除這位人才的履歷嗎？')) {
+      setTalents(prev => prev.filter(t => t.id !== id));
+    }
+  };
+
   // Filtered marketplace list (approved only)
   const filteredTalents = talents.filter(t => {
     if (!t.isApproved) return false;
     const q = searchQuery.toLowerCase();
     const skill = skillFilter.toLowerCase();
     const matchesQuery = t.name.toLowerCase().includes(q) || t.title.toLowerCase().includes(q);
-    const matchesSkill = skill ? t.skills.some(s => s.toLowerCase().includes(skill)) : true;
+    const matchesSkill = skill ? t.skills?.some(s => s.toLowerCase().includes(skill)) : true;
     return matchesQuery && matchesSkill;
   });
 
@@ -189,16 +425,18 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-grow">
-        <Navbar view={view} onViewChange={setView} />
-        <main className="flex-grow p-4 lg:p-8">
+        {/* 👑 傳遞 currentUser 與 setView 給導覽列，以便切換「會員登入 / 註冊」或亮綠燈的「我的主控台」 */}
+        <Navbar view={view} onViewChange={setView} currentUser={currentUser} />
 
-          {/* ── Marketplace ── */}
+        <main className="flex-grow p-4 lg:p-8 pt-24">
+
+          {/* ── Marketplace 首頁 ── */}
           {view === 'marketplace' && (
             <>
-              <Hero onViewChange={setView} />
+              <Hero onViewChange={setView} currentUser={currentUser} />
 
               {/* Search / Filter Bar */}
-              <div className="my-8 flex flex-col md:flex-row gap-4 items-center max-w-4xl mx-auto">
+              <div className="my-8 flex flex-col md:flex-row gap-4 items-center max-w-4xl mx-auto w-full px-2">
                 <div className="relative flex-1 w-full">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
                   <input
@@ -222,7 +460,7 @@ export default function App() {
               </div>
 
               {/* Talent Grid */}
-              <div id="marketplace-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+              <div id="marketplace-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
                 {filteredTalents.map(t => (
                   <TalentCard key={t.id} talent={t} onViewProfile={() => setModalTalent(t)} />
                 ))}
@@ -235,16 +473,59 @@ export default function App() {
             </>
           )}
 
-          {view === 'register' && (
-            <RegisterForm onPublish={handlePublish} onCancel={() => setView('marketplace')} />
+          {/* 👑 ── 新增：登入/註冊頁面 ── */}
+          {view === 'login' && (
+            <AuthForm
+              users={users}
+              setUsers={(updatedUsers) => {
+                setUsers(updatedUsers);
+                // 把新註冊的人儲存到 localStorage
+                const customUsers = updatedUsers.filter(u => u.id > 10);
+                localStorage.setItem('app_users', JSON.stringify(customUsers));
+              }}
+              onLoginSuccess={(user) => {
+                setCurrentUser(user);
+                setView('dashboard'); // 登入成功直接轉入主控台
+              }}
+              onCancel={() => setView('marketplace')}
+            />
           )}
+
+          {/* 👑 ── 新增：個人會員主控台 ── */}
+          {view === 'dashboard' && currentUser && (
+            <UserDashboard
+              currentUser={currentUser}
+              // 從全部人才庫中篩選出屬於自己 id 的履歷
+              myProfile={talents.find(t => t.id === currentUser.id) || null}
+              onCreateResume={() => setView('register')}
+              onLogout={() => {
+                setCurrentUser(null);
+                setView('marketplace');
+              }}
+            />
+          )}
+
+          {/* ── 填寫與修改履歷表單 ── */}
+          {view === 'register' && (
+            <RegisterForm
+              onPublish={handlePublish}
+              onCancel={() => setView(currentUser ? 'dashboard' : 'marketplace')}
+              // ✨ 完美帶入舊資料，支援修改功能
+              initialData={talents.find(t => t.id === currentUser?.id) || null}
+            />
+          )}
+
+          {/* ── 詳細資料獨立分頁 ── */}
           {view === 'profile' && selectedTalent && (
             <TalentProfile talent={selectedTalent} onBack={() => setView('marketplace')} />
           )}
+
+          {/* ── 後台審核管理面板 ── */}
           {view === 'admin' && (
             <AdminPanel
               talents={talents}
               onApprove={handleApproveToggle}
+              onDelete={handleDeleteTalent}
               onBack={() => setView('marketplace')}
             />
           )}
@@ -252,7 +533,7 @@ export default function App() {
         <Footer />
       </div>
 
-      {/* ── Talent Detail Modal ── */}
+      {/* ── Talent Detail Modal 彈出視窗 ── */}
       {modalTalent && (
         <TalentModal talent={modalTalent} onClose={() => setModalTalent(null)} />
       )}

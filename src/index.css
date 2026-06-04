@@ -7,60 +7,402 @@
   --color-brand-emerald: #10b981;
 }
 
+/* ==========================================
+   🎨 強制多主題動態背景系統 (卡片美化究極版)
+   ========================================== */
+
+/* --- 1. 預設暗色主題：深邃星空 --- */
+html,
+body,
+body.theme-slate,
+#root,
+#root>div {
+  background-color: #020617 !important;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(15, 23, 42, 0.95) 0px, transparent 70%) !important;
+  color: #f8fafc !important;
+  transition: background 0.5s ease, background-color 0.5s ease, color 0.5s ease !important;
+}
+
+body.theme-slate .logo-text {
+  color: #ffffff;
+}
+
+body.theme-slate .nav-btn {
+  color: #94a3b8;
+}
+
+body.theme-slate .nav-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.theme-slate .nav-btn.active {
+  color: #34d399;
+}
+
+body.theme-slate .theme-selector-btn {
+  color: #94a3b8;
+}
+
+body.theme-slate .theme-tag {
+  background: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+/* --- 2. 暗色主題：極光森林 --- */
+html:has(body.theme-emerald),
+body.theme-emerald,
+body.theme-emerald #root,
+body.theme-emerald #root>div {
+  background-color: #022c22 !important;
+  background-image:
+    radial-gradient(at 10% 20%, rgba(52, 211, 153, 0.15) 0px, transparent 45%),
+    radial-gradient(at 90% 10%, rgba(45, 212, 191, 0.12) 0px, transparent 50%),
+    radial-gradient(at 60% 80%, rgba(2, 44, 34, 0.95) 0px, transparent 70%) !important;
+  color: #f0fdf4 !important;
+}
+
+body.theme-emerald .logo-text {
+  color: #ffffff;
+}
+
+body.theme-emerald .nav-btn {
+  color: #a7f3d0;
+}
+
+body.theme-emerald .nav-btn:hover {
+  color: #ffffff;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+body.theme-emerald .nav-btn.active {
+  color: #34d399;
+}
+
+body.theme-emerald .theme-selector-btn {
+  color: #a7f3d0;
+}
+
+body.theme-emerald .theme-tag {
+  background: #064e3b;
+  color: #d1fae5;
+  border-color: #065f46;
+}
+
+/* --- 3. 暗色主題：幻彩紫羅蘭 --- */
+html:has(body.theme-purple),
+body.theme-purple,
+body.theme-purple #root,
+body.theme-purple #root>div {
+  background-color: #120b24 !important;
+  background-image:
+    radial-gradient(at 5% 5%, rgba(168, 85, 247, 0.2) 0px, transparent 40%),
+    radial-gradient(at 95% 15%, rgba(236, 72, 153, 0.15) 0px, transparent 45%),
+    radial-gradient(at 50% 90%, rgba(18, 11, 36, 0.95) 0px, transparent 70%) !important;
+  color: #faf5ff !important;
+}
+
+body.theme-purple .logo-text {
+  color: #ffffff;
+}
+
+body.theme-purple .nav-btn {
+  color: #e9d5ff;
+}
+
+body.theme-purple .nav-btn:hover {
+  color: #ffffff;
+  background: rgba(168, 85, 247, 0.1);
+}
+
+body.theme-purple .nav-btn.active {
+  color: #c084fc;
+}
+
+body.theme-purple .theme-selector-btn {
+  color: #e9d5ff;
+}
+
+body.theme-purple .theme-tag {
+  background: #2e1065;
+  color: #f3e8ff;
+  border-color: #4c1d95;
+}
+
+
+/* --- 4. ✨ 淺色主題：極簡明亮 (白瓷高質感) --- */
+html:has(body.theme-light),
+body.theme-light,
+body.theme-light #root,
+body.theme-light #root>div {
+  background-color: #f8fafc !important;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.04) 0px, transparent 50%) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .logo-text {
+  color: #0f172a;
+}
+
+body.theme-light .nav-btn {
+  color: #475569;
+}
+
+body.theme-light .nav-btn:hover {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.theme-light .nav-btn.active {
+  color: #059669;
+  font-weight: 600;
+}
+
+body.theme-light .theme-selector-btn {
+  color: #475569;
+}
+
+body.theme-light .theme-tag {
+  background: #cbd5e1;
+  color: #1e293b;
+  border-color: #94a3b8;
+}
+
+body.theme-light .glass-navbar {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 🌟 卡片外觀提升 */
+body.theme-light .glass-panel {
+  background: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04), 0 4px 12px -4px rgba(15, 23, 42, 0.02) !important;
+}
+
+/* 🌟 清除死灰標籤：改用精緻的淡色底與品牌深色字 */
+body.theme-light [class*="bg-slate-"],
+body.theme-light [class*="bg-gray-"] {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid rgba(203, 213, 225, 0.5) !important;
+}
+
+/* 個別細項優化（經驗、Email 圖標與文字） */
+body.theme-light .glass-panel svg {
+  color: #475569 !important;
+}
+
+
+/* --- 5. ✨ 淺色主題：蔚藍海岸 (清爽海洋) --- */
+html:has(body.theme-ocean),
+body.theme-ocean,
+body.theme-ocean #root,
+body.theme-ocean #root>div {
+  background-color: #e0f2fe !important;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.5) 0px, transparent 60%) !important;
+  color: #0369a1 !important;
+}
+
+body.theme-ocean .logo-text {
+  color: #0369a1;
+}
+
+body.theme-ocean .nav-btn {
+  color: #0284c7;
+}
+
+body.theme-ocean .nav-btn:hover {
+  color: #0369a1;
+  background: rgba(14, 165, 233, 0.08);
+}
+
+body.theme-ocean .nav-btn.active {
+  color: #0284c7;
+  font-weight: 600;
+}
+
+body.theme-ocean .theme-selector-btn {
+  color: #0284c7;
+}
+
+body.theme-ocean .theme-tag {
+  background: #bae6fd;
+  color: #0369a1;
+  border-color: #7dd3fc;
+}
+
+body.theme-ocean .glass-navbar {
+  background: rgba(224, 242, 254, 0.85) !important;
+  border-bottom: 1px solid rgba(14, 165, 233, 0.15) !important;
+}
+
+/* 🌟 卡片外觀提升 */
+body.theme-ocean .glass-panel {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(14, 165, 233, 0.15) !important;
+  box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.08) !important;
+}
+
+/* 🌟 清除死灰標籤：改用透亮海浪藍底色 */
+body.theme-ocean [class*="bg-slate-"],
+body.theme-ocean [class*="bg-gray-"] {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  border: 1px solid rgba(125, 211, 252, 0.4) !important;
+}
+
+body.theme-ocean .glass-panel svg {
+  color: #0284c7 !important;
+}
+
+
+/* ==========================================
+   💥 淺色模式文字色彩與排版精細雕琢（含斜體轉正）
+   ========================================== */
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light label,
+body.theme-light .text-white,
+body.theme-light .text-slate-100,
+body.theme-light .text-slate-200 {
+  color: #0f172a !important;
+}
+
+body.theme-light p,
+body.theme-light .text-slate-300,
+body.theme-light .text-slate-400,
+body.theme-light .text-slate-500 {
+  color: #475569 !important;
+}
+
+/* 讓中文自述不再歪歪斜斜，並轉回優雅的正常字體 */
+body.theme-light p.italic,
+body.theme-light .italic {
+  font-style: normal !important;
+  color: #576574 !important;
+}
+
+body.theme-ocean h1,
+body.theme-ocean h2,
+body.theme-ocean h3,
+body.theme-ocean label,
+body.theme-ocean .text-white,
+body.theme-ocean .text-slate-100,
+body.theme-ocean .text-slate-200 {
+  color: #0c4a6e !important;
+}
+
+body.theme-ocean p,
+body.theme-ocean .text-slate-300,
+body.theme-ocean .text-slate-400,
+body.theme-ocean .text-slate-500 {
+  color: #0284c7 !important;
+}
+
+body.theme-ocean p.italic,
+body.theme-ocean .italic {
+  font-style: normal !important;
+  color: #0369a1 !important;
+}
+
+/* 調整強烈發光與按鈕輸入框 */
+body.theme-light input,
+body.theme-light textarea,
+body.theme-light select {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-ocean input,
+body.theme-ocean textarea,
+body.theme-ocean select {
+  background: #ffffff !important;
+  color: #0c4a6e !important;
+  border: 1px solid #bae6fd !important;
+}
+
+body.theme-light .glow-glow,
+body.theme-light .glow-emerald,
+body.theme-light .glow-cyan {
+  box-shadow: none !important;
+}
+
+body.theme-ocean .glow-glow,
+body.theme-ocean .glow-emerald,
+body.theme-ocean .glow-cyan {
+  box-shadow: none !important;
+}
+
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
+
   body {
-    background-color: #020617; /* Slate-950 */
-    color: #f8fafc; /* Slate-50 */
     font-family: var(--font-sans);
     overflow-x: hidden;
   }
-  
+
   /* Modern Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 10px;
   }
-  ::-webkit-scrollbar-track {
-    background: #020617;
-  }
+
   ::-webkit-scrollbar-thumb {
     background: #1e293b;
     border-radius: 9999px;
-    border: 2px solid #020617;
+    border: 2px solid transparent;
   }
+
+  body.theme-slate ::-webkit-scrollbar-thumb {
+    border-color: #020617;
+  }
+
+  body.theme-emerald ::-webkit-scrollbar-thumb {
+    border-color: #022c22;
+    background: #064e3b;
+  }
+
+  body.theme-purple ::-webkit-scrollbar-thumb {
+    border-color: #120b24;
+    background: #2e1065;
+  }
+
+  body.theme-light ::-webkit-scrollbar-thumb {
+    border-color: #f8fafc;
+    background: #cbd5e1;
+  }
+
+  body.theme-ocean ::-webkit-scrollbar-thumb {
+    border-color: #e0f2fe;
+    background: #7dd3fc;
+  }
+
   ::-webkit-scrollbar-thumb:hover {
     background: #334155;
   }
 }
 
-/* Custom Neon/Glow styles */
-.glow-emerald {
-  box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.25);
-}
-
-.glow-cyan {
-  box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.25);
-}
-
-.glow-glow {
-  box-shadow: 0 0 40px -10px rgba(6, 182, 212, 0.15), 0 0 40px -10px rgba(16, 185, 129, 0.15);
-}
-
-.text-glow-cyan {
-  text-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
-}
-
-.text-glow-emerald {
-  text-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
-}
-
-/* Float Animations */
+/* 原有的動畫 */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-12px);
   }
@@ -71,12 +413,15 @@
 }
 
 @keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.25;
+
+  0%,
+  100% {
+    opacity: 0.15;
     transform: scale(1) translate(0px, 0px);
   }
+
   50% {
-    opacity: 0.45;
+    opacity: 0.3;
     transform: scale(1.15) translate(20px, -20px);
   }
 }
@@ -86,12 +431,15 @@
 }
 
 @keyframes pulse-slow-reverse {
-  0%, 100% {
-    opacity: 0.2;
+
+  0%,
+  100% {
+    opacity: 0.1;
     transform: scale(1.1) translate(0px, 0px);
   }
+
   50% {
-    opacity: 0.35;
+    opacity: 0.25;
     transform: scale(0.9) translate(-30px, 20px);
   }
 }
@@ -100,7 +448,6 @@
   animation: pulse-slow-reverse 12s ease-in-out infinite;
 }
 
-/* Glassmorphism utility classes */
 .glass-panel {
   background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(12px);
