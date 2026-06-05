@@ -172,7 +172,7 @@ const MOCK_TALENTS = [
     email: 'chang.db@example.com',
     yearsOfExp: 7,
     expectedSalary: '月薪 95,000–130,000',
-    bio: '具備 7 年大型分散式系統開發經驗的後端老手。精通高併發架構設計、微服務架構與關聯式資料庫深度優化。處理過百萬級日活躍用戶數據。',
+    bio: '具備 7 年大型分散式系統開發經驗的後端老手。精通高併發架構設計、微服務架構與關聯式資料庫深度優化.處理過百萬級日活躍用戶數據。',
     experience: [
       { role: '資深核心後端工程師', company: '獵豹跨國電商平台', period: '2020.01 – 至今' },
       { role: '後端工程師', company: '國泰金控數數發中心', period: '2018.02 – 2019.12' }
@@ -498,6 +498,8 @@ export default function App() {
               // 從全部人才庫中篩選出屬於自己 id 的履歷
               myProfile={talents.find(t => t.id === currentUser.id) || null}
               onCreateResume={() => setView('register')}
+              // 🌟 新增這一行：當點擊修改履歷時，同樣導入 'register' 填寫頁，藉由下方的 initialData 自動灌入舊資料！
+              onEditResume={() => setView('register')}
               onLogout={() => {
                 setCurrentUser(null);
                 setView('marketplace');

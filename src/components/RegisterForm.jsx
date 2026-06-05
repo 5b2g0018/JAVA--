@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Send, CheckCircle2, ArrowLeft, AlertTriangle, X } from 'lucide-react';
 
-export default function RegisterForm({ onPublish, onCancel }) {
+// 🌟 1. 在參數解構中加入 initialData
+export default function RegisterForm({ onPublish, onCancel, initialData }) {
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
   const [motto, setMotto] = useState('');
@@ -26,6 +27,49 @@ export default function RegisterForm({ onPublish, onCancel }) {
 
   // 錯誤提示彈窗狀態
   const [errorModal, setErrorModal] = useState({ show: false, message: '' });
+
+  // 🌟 2. 加入關鍵：監聽 initialData 進行舊資料回填
+  useEffect(() => {
+    if (initialData) {
+      // 回填基本資料
+      setName(initialData.name || '');
+      setTitle(initialData.title || '');
+      setMotto(initialData.motto || '');
+      setAvatar(initialData.avatar || '');
+      setEmail(initialData.email || '');
+
+      // 回填技術專長：區分出熱門標籤與自訂標籤
+      const savedSkills = initialData.skills || [];
+      const popular = savedSkills.filter(skill => popularSkills.includes(skill));
+      const custom = savedSkills.filter(skill => !popularSkills.includes(skill));
+
+      setSelectedSkills(popular);
+      setCustomSkills(custom.join(', ')); // 將陣列轉回成逗號分隔的字串
+
+      // 回填作品集：將原本的 tags 陣列轉回成逗號分隔的字串以便在 input 修改
+      if (initialData.portfolio && initialData.portfolio.length > 0) {
+        const formattedProjects = initialData.portfolio.map(proj => ({
+          title: proj.title || '',
+          description: proj.description || '',
+          image: proj.image || '',
+          tags: Array.isArray(proj.tags) ? proj.tags.join(', ') : (proj.tags || '')
+        }));
+        setProjects(formattedProjects);
+      } else {
+        setProjects([{ title: '', description: '', image: '', tags: '' }]);
+      }
+    } else {
+      // 🌟 如果沒有 initialData，代表是點擊「新增」，清空表單
+      setName('');
+      setTitle('');
+      setMotto('');
+      setAvatar('');
+      setEmail('');
+      setSelectedSkills([]);
+      setCustomSkills('');
+      setProjects([{ title: '', description: '', image: '', tags: '' }]);
+    }
+  }, [initialData]);
 
   const handleSkillToggle = (skill) => {
     setSelectedSkills(prev =>
@@ -104,9 +148,9 @@ export default function RegisterForm({ onPublish, onCancel }) {
 
     setIsSubmitting(true);
 
-    // 🌟 這裡已恢復純淨：不再由表單決定，直接預設為 true（上線中）
+    // 🌟 3. 送出時保持原本的履歷 id，避免修改卻變成新增一筆
     const newTalent = {
-      id: Date.now(),
+      id: initialData?.id ? initialData.id : Date.now(),
       name: name.trim(),
       title: title.trim(),
       motto: motto.trim(),
@@ -114,7 +158,8 @@ export default function RegisterForm({ onPublish, onCancel }) {
       email: email.trim(),
       isOnline: true,
       skills: finalSkills,
-      portfolio: finalProjects
+      portfolio: finalProjects,
+      isApproved: initialData ? initialData.isApproved : false // 保持原本的審核狀態
     };
 
     setTimeout(() => {
@@ -135,6 +180,7 @@ export default function RegisterForm({ onPublish, onCancel }) {
 
       {/* Back button */}
       <button
+        type="button"
         onClick={onCancel}
         className="mb-8 flex items-center text-sm font-semibold text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer group"
       >
@@ -157,7 +203,7 @@ export default function RegisterForm({ onPublish, onCancel }) {
 
           <div className="mb-10 border-b border-slate-900 pb-6">
             <h2 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-emerald-400">
-              登錄你的數位履歷
+              {initialData ? '修改你的數位履歷' : '登錄你的數位履歷'}
             </h2>
             <p className="text-sm text-slate-400 font-light mt-2">
               填寫下方基本欄位、專長與精選作品，立即讓有招募需求的企業與團隊看見你！
@@ -246,8 +292,8 @@ export default function RegisterForm({ onPublish, onCancel }) {
                         key={index}
                         onClick={() => handleSkillToggle(skill)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-300 cursor-pointer ${selectedSkills.includes(skill)
-                            ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                            : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:text-slate-200'
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                          : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:text-slate-200'
                           }`}
                       >
                         {skill}
@@ -367,7 +413,7 @@ export default function RegisterForm({ onPublish, onCancel }) {
                   "發布中..."
                 ) : (
                   <>
-                    <span>發布履歷</span>
+                    <span>{initialData ? '儲存修改' : '發布履歷'}</span>
                     <Send size={15} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
                   </>
                 )}
@@ -396,6 +442,7 @@ export default function RegisterForm({ onPublish, onCancel }) {
           />
           <div className="relative w-full max-w-md p-6 rounded-2xl bg-slate-900 border border-rose-500/30 shadow-[0_0_40px_rgba(244,63,94,0.15)] animate-in fade-in zoom-in-95 duration-200">
             <button
+              type="button"
               onClick={() => setErrorModal({ show: false, message: '' })}
               className="absolute top-4 right-4 p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
             >
@@ -410,6 +457,7 @@ export default function RegisterForm({ onPublish, onCancel }) {
                 {errorModal.message}
               </p>
               <button
+                type="button"
                 onClick={() => setErrorModal({ show: false, message: '' })}
                 className="w-full mt-2 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 shadow-md shadow-rose-950/40 transition-all transform hover:-translate-y-0.5 cursor-pointer"
               >

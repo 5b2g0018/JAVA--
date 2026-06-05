@@ -4,7 +4,8 @@ import {
     Briefcase, GraduationCap, Sparkles, Mail, DollarSign, Award, Edit3
 } from 'lucide-react';
 
-export default function UserDashboard({ currentUser, myProfile, onCreateResume, onLogout }) {
+// 🌟 1. 在參數中加入 onEditResume
+export default function UserDashboard({ currentUser, myProfile, onCreateResume, onEditResume, onLogout }) {
     const hasProfile = !!myProfile;
     return (
         <div className="max-w-4xl mx-auto pt-24 pb-12 px-4 space-y-8 relative z-10">
@@ -19,7 +20,15 @@ export default function UserDashboard({ currentUser, myProfile, onCreateResume, 
             <div className="backdrop-blur-xl bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-850 pb-4">
                     <h2 className="text-lg font-bold text-slate-200 flex items-center gap-2"><FileText size={20} className="text-emerald-400" />我的專屬人才簡歷</h2>
-                    {hasProfile && <button onClick={onCreateResume} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-800 text-emerald-400"><Edit3 size={12} className="inline mr-1" />修改履歷</button>}
+                    {/* 🌟 2. 將原本的 onCreateResume 改為 onEditResume */}
+                    {hasProfile && (
+                        <button
+                            onClick={onEditResume}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-800 text-emerald-400 hover:bg-slate-900 transition-all"
+                        >
+                            <Edit3 size={12} className="inline mr-1" />修改履歷
+                        </button>
+                    )}
                 </div>
 
                 {!hasProfile ? (
