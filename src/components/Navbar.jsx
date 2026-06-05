@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Code, Briefcase, PlusCircle, ShieldCheck, LogOut, Palette, User } from 'lucide-react';
 
-// 👑 新增接收 currentUser 參數
+// 👑 接收 view, onViewChange, currentUser 參數
 export default function Navbar({ view, onViewChange, currentUser }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
@@ -64,9 +64,8 @@ export default function Navbar({ view, onViewChange, currentUser }) {
     if (currentTime - lastClickTime > 1000) {
       setClickCount(1);
     } else {
-      const newCount = clickCount + 1;
-      setClickCount(newCount);
-      if (newCount === 5) {
+      setClickCount(clickCount + 1);
+      if (clickCount + 1 === 5) {
         setIsAdminMode((prev) => !prev);
         setClickCount(0);
         alert(`🤫 暗號成功！管理員模式已${!isAdminMode ? '開啟' : '關閉'}`);
@@ -85,10 +84,18 @@ export default function Navbar({ view, onViewChange, currentUser }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // 原始所有導覽項目
   const navItems = [
     { key: 'marketplace', label: '人才市集', icon: Briefcase },
     { key: 'register', label: '登錄履歷', icon: PlusCircle },
   ];
+
+  // 🌟 智慧過濾：根據當前的 view 狀態，自動剔除不需要顯示的按鈕
+  const filteredNavItems = navItems.filter(({ key }) => {
+    if (key === 'marketplace' && (view === 'marketplace' || view === 'profile')) return false;
+    if (key === 'register' && view === 'register') return false;
+    return true;
+  });
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-navbar transition-all duration-300">
@@ -109,11 +116,11 @@ export default function Navbar({ view, onViewChange, currentUser }) {
             </span>
           </div>
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav (電腦版導覽列) */}
           <div className="hidden md:flex items-center space-x-2">
 
-            {/* 一般導覽項目 */}
-            {navItems.map(({ key, label, icon: Icon }) => (
+            {/* 🌟 經智慧過濾後的導覽項目（會隨頁面自動隱藏） */}
+            {filteredNavItems.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
                 onClick={() => handleNavClick(key)}
@@ -147,8 +154,8 @@ export default function Navbar({ view, onViewChange, currentUser }) {
                 <button
                   onClick={() => handleNavClick('admin')}
                   className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer flex items-center space-x-1.5 border ${view === 'admin'
-                      ? 'text-rose-400 border-rose-500/40 bg-rose-500/5 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
-                      : 'text-slate-500 border-slate-800 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5'
+                    ? 'text-rose-400 border-rose-500/40 bg-rose-500/5 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
+                    : 'text-slate-500 border-slate-800 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5'
                     }`}
                 >
                   <ShieldCheck size={16} />
@@ -170,12 +177,12 @@ export default function Navbar({ view, onViewChange, currentUser }) {
 
             {/* 👑 智慧狀態按鈕：辨識登入狀態 */}
             {!currentUser ? (
-              // 訪客未登入 ➡️ 顯示「會員登入 / 註冊」
+              // 訪客未登入 ➡️ 顯示「會員登入 / 註冊」 （如果人在登入頁，就自動套用 active 樣式）
               <button
                 onClick={() => handleNavClick('login')}
                 className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer flex items-center space-x-1.5 border ${view === 'login'
-                    ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                    : 'text-slate-300 border-slate-800 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5'
+                  ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                  : 'text-slate-300 border-slate-800 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5'
                   }`}
               >
                 <User size={16} />
@@ -186,8 +193,8 @@ export default function Navbar({ view, onViewChange, currentUser }) {
               <button
                 onClick={() => handleNavClick('dashboard')}
                 className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer flex items-center space-x-1.5 border ${view === 'dashboard'
-                    ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
-                    : 'text-emerald-400/80 border-slate-800 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5'
+                  ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
+                  : 'text-emerald-400/80 border-slate-800 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/5'
                   }`}
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-0.5" />
@@ -197,7 +204,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
 
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button (手機版漢堡排) */}
           <div className="flex items-center space-x-2 md:hidden">
             <button onClick={toggleTheme} className="p-2 rounded-lg text-slate-400 hover:text-cyan-400">
               <Palette size={20} />
@@ -215,7 +222,8 @@ export default function Navbar({ view, onViewChange, currentUser }) {
           }`}
       >
         <div className="px-4 py-4 space-y-2">
-          {navItems.map(({ key, label, icon: Icon }) => (
+          {/* 🌟 手機版也同步套用智慧過濾按鈕 */}
+          {filteredNavItems.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               onClick={() => handleNavClick(key)}

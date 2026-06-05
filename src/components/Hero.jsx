@@ -25,7 +25,7 @@ export default function Hero({ onViewChange }) {
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[450px] h-[450px] rounded-full bg-cyan-500/10 blur-[120px] animate-pulse-slow-reverse pointer-events-none" />
 
       <div className="max-w-5xl mx-auto w-full text-center relative z-10 space-y-8">
-        
+
         {/* Hello Badge */}
         <div className="flex justify-center">
           <span className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-semibold tracking-wider uppercase">
@@ -68,22 +68,6 @@ export default function Hero({ onViewChange }) {
             <PlusCircle className="mr-2 w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             登錄我的履歷
           </button>
-        </div>
-
-        {/* Quick features indicator */}
-        <div className="pt-8 flex flex-wrap justify-center gap-8 text-xs text-slate-500">
-          <div className="flex items-center space-x-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            <span>完全免費發布</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-            <span>精美霓虹暗黑樣式</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
-            <span>強大關鍵字搜尋篩選</span>
-          </div>
         </div>
 
       </div>
