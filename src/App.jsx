@@ -282,7 +282,7 @@ const MOCK_TALENTS = [
     portfolio: [
       {
         title: '大型產品線敏捷轉型引導',
-        description: '帶領 60 人團隊由傳統瀑布式成功轉型為雙週衝刺的 Scrum 架構，使功能上線產出提升 35%。',
+        description: '帶領 60 人團隊由傳統瀑布式成功轉型為雙週衝刺的 Scrum架構，使功能上線產出提升 35%。',
         image: 'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=800&q=80',
         tags: ['Agile', 'Scrum Coaching', 'Jira Software'],
       }
@@ -294,7 +294,6 @@ const MOCK_TALENTS = [
 // ─── App Component ───────────────────────────────────────────────────────────
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [view, setView] = useState('marketplace');
   const [talents, setTalents] = useState([]);
   const [selectedTalent, setSelectedTalent] = useState(null);
   const [modalTalent, setModalTalent] = useState(null);
@@ -309,8 +308,27 @@ export default function App() {
       password: 'password123',
     }
   ]);
-  // 👑 目前登入的用戶，如果是 null 代表訪客未登入
-  const [currentUser, setCurrentUser] = useState(null);
+
+  // 💾 1. 自動記憶：目前登入的用戶（初始化時直接從 localStorage 讀取紀錄）
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem('hub_current_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  // 💾 2. 自動記憶：上次停留在哪一個畫面（預設如果已登入就進 dashboard，否則就進 marketplace）
+  const [view, setView] = useState(() => {
+    const savedView = localStorage.getItem('hub_current_view');
+    if (savedView) return savedView;
+
+    // 如果沒有上次畫面紀錄，則動態判斷：有登入就去主控台，沒登入就去市集首頁
+    const savedUser = localStorage.getItem('hub_current_user');
+    return savedUser ? 'dashboard' : 'marketplace';
+  });
+
+  // 每當 view 切換時，自動同步把最新畫面存在瀏覽器
+  useEffect(() => {
+    localStorage.setItem('hub_current_view', view);
+  }, [view]);
 
   // Load mock + localStorage
   useEffect(() => {
@@ -484,7 +502,9 @@ export default function App() {
                 localStorage.setItem('app_users', JSON.stringify(customUsers));
               }}
               onLoginSuccess={(user) => {
+                // 💾 登入成功：除了設定狀態，也立刻將使用者存進 localStorage 快取
                 setCurrentUser(user);
+                localStorage.setItem('hub_current_user', JSON.stringify(user));
                 setView('dashboard'); // 登入成功直接轉入主控台
               }}
               onCancel={() => setView('marketplace')}
@@ -501,7 +521,10 @@ export default function App() {
               // 🌟 新增這一行：當點擊修改履歷時，同樣導入 'register' 填寫頁，藉由下方的 initialData 自動灌入舊資料！
               onEditResume={() => setView('register')}
               onLogout={() => {
+                // 💾 安全登出：清除當前使用者快取與畫面紀錄，確保回到首頁
                 setCurrentUser(null);
+                localStorage.removeItem('hub_current_user');
+                localStorage.removeItem('hub_current_view');
                 setView('marketplace');
               }}
             />
