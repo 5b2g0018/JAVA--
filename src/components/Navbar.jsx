@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Code, Briefcase, PlusCircle, ShieldCheck, LogOut, Palette, User } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, Code, Briefcase, PlusCircle, ShieldCheck, LogOut, Palette, User, ChevronDown } from 'lucide-react';
 
 // 👑 接收 view, onViewChange, currentUser 參數
 export default function Navbar({ view, onViewChange, currentUser }) {
@@ -10,10 +10,23 @@ export default function Navbar({ view, onViewChange, currentUser }) {
   const [clickCount, setClickCount] = useState(0);
   const [lastClickTime, setLastClickTime] = useState(0);
 
-  // 🎨 主題狀態：增加了 'theme-light' 和 'theme-ocean'
+  // 🎨 下拉選單開關狀態與 Ref 偵測
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // 主題狀態：增加了 'theme-light' 和 'theme-ocean'
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('hub-theme') || 'theme-slate';
   });
+
+  // 主題選單資料陣列
+  const themeOptions = [
+    { id: 'theme-slate', label: '深邃星空', icon: '🌌' },
+    { id: 'theme-emerald', label: '極光森林', icon: '🌲' },
+    { id: 'theme-purple', label: '幻彩紫羅蘭', icon: '🔮' },
+    { id: 'theme-light', label: '極簡明亮', icon: '☀️' },
+    { id: 'theme-ocean', label: '蔚藍海岸', icon: '🏖️' }
+  ];
 
   // 當主題改變時，同步切換 document.body 的 class
   useEffect(() => {
@@ -22,22 +35,19 @@ export default function Navbar({ view, onViewChange, currentUser }) {
     localStorage.setItem('hub-theme', theme);
   }, [theme]);
 
-  // 循環切換 5 種主題
-  const toggleTheme = () => {
-    const themes = ['theme-slate', 'theme-emerald', 'theme-purple', 'theme-light', 'theme-ocean'];
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
-  };
+  // 監聽點擊外部事件來自動關閉主題下拉選單
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  // 取得當前主題的中文名稱
-  const getThemeLabel = () => {
-    if (theme === 'theme-slate') return '深邃星空 🌌';
-    if (theme === 'theme-emerald') return '極光森林 🌲';
-    if (theme === 'theme-purple') return '幻彩紫羅蘭 🔮';
-    if (theme === 'theme-light') return '極簡明亮 ☀️';
-    return '蔚藍海岸 🏖️';
-  };
+  // 取得當前主題的標籤物件
+  const currentThemeObj = themeOptions.find(t => t.id === theme) || themeOptions[0];
 
   // 偵測網址是否含 ?admin=true
   useEffect(() => {
@@ -119,7 +129,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
           {/* Desktop Nav (電腦版導覽列) */}
           <div className="hidden md:flex items-center space-x-2">
 
-            {/* 🌟 經智慧過濾後的導覽項目（會隨頁面自動隱藏） */}
+            {/* 🌟 智慧過濾主按鈕區 */}
             {filteredNavItems.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
@@ -135,17 +145,41 @@ export default function Navbar({ view, onViewChange, currentUser }) {
               </button>
             ))}
 
-            {/* 🎨 主題切換按鈕 */}
-            <button
-              onClick={toggleTheme}
-              title={`目前主題：${getThemeLabel()} (點擊切換)`}
-              className="p-2 ml-2 rounded-lg theme-selector-btn transition-all duration-300 cursor-pointer flex items-center gap-1.5 text-sm font-medium"
-            >
-              <Palette size={16} />
-              <span className="text-xs px-2 py-0.5 rounded-full border theme-tag">
-                {getThemeLabel()}
-              </span>
-            </button>
+            {/* 🎨 主題切換下拉選單 */}
+            <div className="relative inline-flex items-center gap-1.5 ml-2" ref={dropdownRef}>
+              <Palette size={16} className="text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 hover:bg-slate-800/80 text-xs font-medium text-slate-200 transition-all cursor-pointer focus:outline-none select-none"
+              >
+                <span>{currentThemeObj.label} {currentThemeObj.icon}</span>
+                <ChevronDown size={12} className={`text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* 下拉選單浮磚本體 */}
+              {isDropdownOpen && (
+                <div className="absolute top-full left-5 mt-2 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                  {themeOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => {
+                        setTheme(option.id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-left transition-colors cursor-pointer ${theme === option.id
+                        ? 'bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                        }`}
+                    >
+                      <span>{option.label}</span>
+                      <span>{option.icon}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* 後台管理 */}
             {isAdminMode && (
@@ -175,9 +209,8 @@ export default function Navbar({ view, onViewChange, currentUser }) {
             {/* 分隔微光線 */}
             <div className="h-4 w-[1px] bg-slate-800/80 mx-2" />
 
-            {/* 👑 智慧狀態按鈕：辨識登入狀態 */}
+            {/* 👑 獨立出來的登入狀態按鈕（確保不論在哪個頁面都不會被過濾掉） */}
             {!currentUser ? (
-              // 訪客未登入 ➡️ 顯示「會員登入 / 註冊」 （如果人在登入頁，就自動套用 active 樣式）
               <button
                 onClick={() => handleNavClick('login')}
                 className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer flex items-center space-x-1.5 border ${view === 'login'
@@ -189,7 +222,6 @@ export default function Navbar({ view, onViewChange, currentUser }) {
                 <span>會員登入 / 註冊</span>
               </button>
             ) : (
-              // 會員已登入 ➡️ 顯示「我的主控台」
               <button
                 onClick={() => handleNavClick('dashboard')}
                 className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer flex items-center space-x-1.5 border ${view === 'dashboard'
@@ -206,7 +238,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
 
           {/* Mobile Menu Button (手機版漢堡排) */}
           <div className="flex items-center space-x-2 md:hidden">
-            <button onClick={toggleTheme} className="p-2 rounded-lg text-slate-400 hover:text-cyan-400">
+            <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="p-2 rounded-lg text-slate-400 hover:text-cyan-400">
               <Palette size={20} />
             </button>
             <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg text-slate-400 hover:text-white">
@@ -222,7 +254,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
           }`}
       >
         <div className="px-4 py-4 space-y-2">
-          {/* 🌟 手機版也同步套用智慧過濾按鈕 */}
+          {/* 🌟 手機版過濾按鈕 */}
           {filteredNavItems.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -234,7 +266,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
             </button>
           ))}
 
-          {/* 👑 手機版抽屜：智慧狀態切換 */}
+          {/* 手機版登入狀態 */}
           {!currentUser ? (
             <button
               onClick={() => handleNavClick('login')}
@@ -253,9 +285,18 @@ export default function Navbar({ view, onViewChange, currentUser }) {
             </button>
           )}
 
-          <button onClick={toggleTheme} className="w-full text-left px-4 py-3 rounded-xl text-base font-medium text-slate-400 flex items-center space-x-2.5">
+          {/* 手機版主題切換 */}
+          <button
+            onClick={() => {
+              const themeIds = themeOptions.map(t => t.id);
+              const currentIndex = themeIds.indexOf(theme);
+              const nextIndex = (currentIndex + 1) % themeIds.length;
+              setTheme(themeIds[nextIndex]);
+            }}
+            className="w-full text-left px-4 py-3 rounded-xl text-base font-medium text-slate-400 flex items-center space-x-2.5"
+          >
             <Palette size={18} />
-            <span>切換主題 ({getThemeLabel()})</span>
+            <span>切換主題 ({currentThemeObj.label} {currentThemeObj.icon})</span>
           </button>
         </div>
       </div>

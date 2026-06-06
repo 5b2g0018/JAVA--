@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     User, FileText, PlusCircle, CheckCircle2, Clock, LogOut,
     Briefcase, GraduationCap, Sparkles, Mail, DollarSign, Award, Edit3
@@ -7,6 +7,20 @@ import {
 // 🌟 1. 在參數中加入 onEditResume
 export default function UserDashboard({ currentUser, myProfile, onCreateResume, onEditResume, onLogout }) {
     const hasProfile = !!myProfile;
+
+    // 🟢 自動感應在線狀態：只要使用者開著這個主控台，預設就是「在線上」
+    const [isOnline, setIsOnline] = useState(false);
+
+    useEffect(() => {
+        // 當組件載入（使用者看著網頁）時，自動判定為上線
+        setIsOnline(true);
+
+        return () => {
+            // 當組件卸載（使用者切換頁面、登出、關閉網頁）時，自動判定為下線
+            setIsOnline(false);
+        };
+    }, []);
+
     return (
         <div className="max-w-4xl mx-auto pt-24 pb-12 px-4 space-y-8 relative z-10">
             <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -38,10 +52,47 @@ export default function UserDashboard({ currentUser, myProfile, onCreateResume, 
                     </div>
                 ) : (
                     <div className="p-6 rounded-2xl bg-slate-950 border border-slate-850 space-y-4">
-                        <div className={`p-4 rounded-xl border ${myProfile.isApproved ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' : 'bg-amber-500/5 border-amber-500/20 text-amber-400'}`}>
-                            {myProfile.isApproved ? '✓ 履歷狀態：已審核通過（市集展示中）' : '⏳ 履歷狀態：待審核中'}
+
+                        {/* 🌟 全自動感知在線狀態區塊（移除手動按鈕，改為精緻狀態列） */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-slate-900/50 border-slate-800">
+
+                            {/* 左側：動態狀態與動態波浪呼吸燈 */}
+                            <div className="flex items-center gap-2 text-sm">
+                                {myProfile.isApproved ? (
+                                    isOnline ? (
+                                        <div className="flex items-center gap-3 text-emerald-400">
+                                            {/* 🟢 在線動態呼吸綠燈特效 */}
+                                            <span className="relative flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                            </span>
+                                            <span className="font-semibold">✓ 履歷狀態：在線上 <span className="text-xs text-emerald-500/80">( 市集展示中 )</span></span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-3 text-slate-500">
+                                            {/* ⚫ 離線暗灰燈 */}
+                                            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
+                                            <span>⏳ 履歷狀態：已下線 <span className="text-xs text-slate-500">( 市集已隱藏 )</span></span>
+                                        </div>
+                                    )
+                                ) : (
+                                    <div className="flex items-center gap-2 text-amber-400">
+                                        <Clock size={16} />
+                                        <span>⏳ 履歷狀態：待審核中</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* 右側：全自動提示文字小標籤 */}
+                            {myProfile.isApproved && (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded border border-slate-800 text-slate-500 bg-slate-950/80">
+                                    系統已自動啟用在線感應
+                                </span>
+                            )}
                         </div>
-                        <div className="space-y-2">
+
+                        {/* 履歷資料展示 */}
+                        <div className="space-y-2 pt-2">
                             <h3 className="text-lg font-black text-white">{myProfile.name}</h3>
                             <p className="text-xs text-emerald-400 font-bold">{myProfile.title}</p>
                             <p className="text-xs text-slate-400 italic">「 {myProfile.motto} 」</p>
