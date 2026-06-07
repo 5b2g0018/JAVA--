@@ -1,8 +1,14 @@
 import React from 'react';
 import { User, Mail, Briefcase, Clock, DollarSign, ArrowRight } from 'lucide-react';
 
-export default function TalentCard({ talent, onViewProfile }) {
+/* 👑 接收從 App.jsx 傳進來的 currentUser */
+export default function TalentCard({ talent, currentUser, onViewProfile }) {
   const displaySkills = talent.skills ? talent.skills.slice(0, 3) : [];
+
+  /* 👑 【正確邏輯修正】
+     只有當「有使用者登入(currentUser存在)」且「登入者的 id 符合這張卡片的 id」時，
+     才代表這個人才目前在線上，isOnline 才會是 true！ */
+  const isOnline = currentUser && currentUser.id === talent.id;
 
   return (
     <div
@@ -27,11 +33,14 @@ export default function TalentCard({ talent, onViewProfile }) {
                 <User size={24} />
               </div>
             )}
-            {/* Online pulse */}
-            <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-            </span>
+
+            {/* 👑 【正確綠燈控制】只有在線 (isOnline === true) 時才渲染綠色閃爍點 */}
+            {isOnline && (
+              <span className="absolute bottom-1 right-1 flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
+            )}
           </div>
 
           <div className="flex-1 overflow-hidden">

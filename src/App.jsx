@@ -82,7 +82,7 @@ const MOCK_TALENTS = [
     id: 3,
     name: '陳建宏',
     title: 'AI 研究員 / 機器學習工程師',
-    motto: '深信 AI 不只是工具，更是改變人類思維的革命。',
+    motto: '深信 AI 不正式工具，更是改變人類思維的革命。',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
     email: 'chen@example.com',
     yearsOfExp: 4,
@@ -294,33 +294,43 @@ const MOCK_TALENTS = [
 // ─── App Component ───────────────────────────────────────────────────────────
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [talents, setTalents] = useState([]);
   const [selectedTalent, setSelectedTalent] = useState(null);
   const [modalTalent, setModalTalent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
 
   // 👑 模擬純前端的使用者資料庫（預設給一個測試用會員，其綁定了 id: 4 黃斜豆的履歷）
-  const [users, setUsers] = useState([
-    {
-      id: 4, // 對應黃斜豆
-      email: 'shadow@student.edu.tw',
-      password: 'password123',
-    }
-  ]);
+  const [users, setUsers] = useState(() => {
+    const defaultUsers = [{ id: 4, email: 'shadow@student.edu.tw', password: 'password123' }];
+    const storedUsers = JSON.parse(localStorage.getItem('app_users') || '[]');
+    // 合併預設與註冊用戶，防重複
+    const merged = [...defaultUsers];
+    storedUsers.forEach(su => {
+      if (!merged.some(u => u.email === su.email)) merged.push(su);
+    });
+    return merged;
+  });
 
-  // 💾 1. 自動記憶：目前登入的用戶（初始化時直接從 localStorage 讀取紀錄）
+  // 💾 1. 【重大修正】狀態初始化函數：網頁開機的第一秒，優先從保險箱取回整份人才庫狀態
+  const [talents, setTalents] = useState(() => {
+    const saved = localStorage.getItem('hub_talents_all');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return MOCK_TALENTS; // 第一次開網頁才用預設的
+  });
+
+  // 💾 2. 自動記憶：目前登入的用戶（初始化時直接從 localStorage 讀取紀錄）
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('hub_current_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  // 💾 2. 自動記憶：上次停留在哪一個畫面（預設如果已登入就進 dashboard，否則就進 marketplace）
+  // 💾 3. 自動記憶：上次停留在哪一個畫面
   const [view, setView] = useState(() => {
     const savedView = localStorage.getItem('hub_current_view');
     if (savedView) return savedView;
 
-    // 如果沒有上次畫面紀錄，則動態判斷：有登入就去主控台，沒登入就去市集首頁
     const savedUser = localStorage.getItem('hub_current_user');
     return savedUser ? 'dashboard' : 'marketplace';
   });
@@ -330,34 +340,9 @@ export default function App() {
     localStorage.setItem('hub_current_view', view);
   }, [view]);
 
-  // Load mock + localStorage
+  // 💾 4. 【重大修正】完整存檔：任何審核狀態（核准、刪除、新增）變動時，無條件整份保存
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('talents') || '[]');
-
-    // 為了防止重複，我們需要過濾掉在 LocalStorage 已經存在的自訂履歷
-    const mergedTalents = [...MOCK_TALENTS];
-    stored.forEach(st => {
-      const idx = mergedTalents.findIndex(m => m.id === st.id);
-      if (idx !== -1) {
-        mergedTalents[idx] = st; // 覆蓋舊資料
-      } else {
-        mergedTalents.push(st); // 新增
-      }
-    });
-    setTalents(mergedTalents);
-
-    // 同步讀取 localStorage 中的註冊使用者
-    const storedUsers = JSON.parse(localStorage.getItem('app_users') || '[]');
-    if (storedUsers.length > 0) {
-      setUsers(prev => [...prev, ...storedUsers.filter(su => !prev.some(p => p.email === su.email))]);
-    }
-  }, []);
-
-  // Persist user-submitted talents (或者是已被修改的 mock 履歷)
-  useEffect(() => {
-    // 只要是從會員主控台發布或修改過的資料，都持久化保存
-    const customTalents = talents.filter(t => t.id > 10 || t.id === 4);
-    localStorage.setItem('talents', JSON.stringify(customTalents));
+    localStorage.setItem('hub_talents_all', JSON.stringify(talents));
   }, [talents]);
 
   // Scroll progress
@@ -384,7 +369,7 @@ export default function App() {
       ...newTalent,
       id: currentUser.id,
       email: currentUser.email,
-      isApproved: false // 每次修改或新發布，都需要重新經過管理員審核
+      isApproved: false // 每次修改 or 新發布，都需要重新經過管理員審核
     };
 
     setTalents(prev => {
@@ -397,6 +382,14 @@ export default function App() {
 
     alert('履歷提交成功！已送交管理員進行上架審核。');
     setView('dashboard'); // 提交成功後導向至個人的控制面板
+  };
+
+  // 👑 【新功能實作】刪除簡歷邏輯：將當前登入者的簡歷資料從陣列中完全移除
+  const handleUserDeleteResume = () => {
+    if (!currentUser) return;
+
+    setTalents(prev => prev.filter(t => t.id !== currentUser.id));
+    alert('您的個人簡歷已成功刪除，並已從人才市集下架。');
   };
 
   const handleViewTalent = (talent) => {
@@ -443,7 +436,7 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-grow">
-        {/* 👑 傳遞 currentUser 與 setView 給導覽列，以便切換「會員登入 / 註冊」或亮綠燈的「我的主控台」 */}
+        {/* 👑 傳遞 currentUser 與 setView 給導覽列 */}
         <Navbar view={view} onViewChange={setView} currentUser={currentUser} />
 
         <main className="flex-grow p-4 lg:p-8 pt-24">
@@ -480,7 +473,13 @@ export default function App() {
               {/* Talent Grid */}
               <div id="marketplace-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
                 {filteredTalents.map(t => (
-                  <TalentCard key={t.id} talent={t} onViewProfile={() => setModalTalent(t)} />
+                  /* 👑 【關鍵修正】在這裡把 currentUser 傳進去給 TalentCard */
+                  <TalentCard
+                    key={t.id}
+                    talent={t}
+                    currentUser={currentUser}
+                    onViewProfile={() => setModalTalent(t)}
+                  />
                 ))}
                 {filteredTalents.length === 0 && (
                   <p className="text-center col-span-full text-slate-500 py-20">
@@ -491,37 +490,34 @@ export default function App() {
             </>
           )}
 
-          {/* 👑 ── 新增：登入/註冊頁面 ── */}
+          {/* 👑 ── 登入/註冊頁面 ── */}
           {view === 'login' && (
             <AuthForm
               users={users}
               setUsers={(updatedUsers) => {
                 setUsers(updatedUsers);
-                // 把新註冊的人儲存到 localStorage
                 const customUsers = updatedUsers.filter(u => u.id > 10);
                 localStorage.setItem('app_users', JSON.stringify(customUsers));
               }}
               onLoginSuccess={(user) => {
-                // 💾 登入成功：除了設定狀態，也立刻將使用者存進 localStorage 快取
                 setCurrentUser(user);
                 localStorage.setItem('hub_current_user', JSON.stringify(user));
-                setView('dashboard'); // 登入成功直接轉入主控台
+                setView('dashboard');
               }}
               onCancel={() => setView('marketplace')}
             />
           )}
 
-          {/* 👑 ── 新增：個人會員主控台 ── */}
+          {/* 👑 ── 個人會員主控台 ── */}
           {view === 'dashboard' && currentUser && (
             <UserDashboard
               currentUser={currentUser}
-              // 從全部人才庫中篩選出屬於自己 id 的履歷
               myProfile={talents.find(t => t.id === currentUser.id) || null}
               onCreateResume={() => setView('register')}
-              // 🌟 新增這一行：當點擊修改履歷時，同樣導入 'register' 填寫頁，藉由下方的 initialData 自動灌入舊資料！
               onEditResume={() => setView('register')}
+              /* 👑 完美串接：將刪除簡歷的處理函式傳入 UserDashboard */
+              onDeleteResume={handleUserDeleteResume}
               onLogout={() => {
-                // 💾 安全登出：清除當前使用者快取與畫面紀錄，確保回到首頁
                 setCurrentUser(null);
                 localStorage.removeItem('hub_current_user');
                 localStorage.removeItem('hub_current_view');
@@ -535,7 +531,6 @@ export default function App() {
             <RegisterForm
               onPublish={handlePublish}
               onCancel={() => setView(currentUser ? 'dashboard' : 'marketplace')}
-              // ✨ 完美帶入舊資料，支援修改功能
               initialData={talents.find(t => t.id === currentUser?.id) || null}
             />
           )}

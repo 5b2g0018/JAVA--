@@ -83,7 +83,8 @@ export default function AuthForm({ users, setUsers, onLoginSuccess, onCancel }) 
                         <input
                             type="email"
                             required
-                            placeholder="example@mail.com"
+                            /* 👑 這裡把原本的 example@mail.com 改成一般的中文提示字（或者留空 "" 也可以） */
+                            placeholder="請輸入您的 Email 帳號"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-700 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/10 transition-all text-sm"
@@ -97,7 +98,8 @@ export default function AuthForm({ users, setUsers, onLoginSuccess, onCancel }) 
                         <input
                             type="password"
                             required
-                            placeholder="••••••••"
+                            /* 👑 這裡把密碼的 placeholder 改成文字提示，這樣才不會有一點一點的點點點偽裝成密碼 */
+                            placeholder="請輸入密碼"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-700 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/10 transition-all text-sm"
@@ -113,7 +115,8 @@ export default function AuthForm({ users, setUsers, onLoginSuccess, onCancel }) 
                             <input
                                 type="password"
                                 required
-                                placeholder="••••••••"
+                                /* 👑 同步修正註冊時的密碼提示字 */
+                                placeholder="請再次輸入密碼確認"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-700 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/10 transition-all text-sm"

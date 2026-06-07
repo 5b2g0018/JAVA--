@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
     User, FileText, PlusCircle, CheckCircle2, Clock, LogOut,
-    Briefcase, GraduationCap, Sparkles, Mail, DollarSign, Award, Edit3
+    Briefcase, GraduationCap, Sparkles, Mail, DollarSign, Award, Edit3, Trash2
 } from 'lucide-react';
 
-// 🌟 1. 在參數中加入 onEditResume
-export default function UserDashboard({ currentUser, myProfile, onCreateResume, onEditResume, onLogout }) {
+// 🌟 1. 在參數中除了 onEditResume 外，再加入 onDeleteResume
+export default function UserDashboard({ currentUser, myProfile, onCreateResume, onEditResume, onDeleteResume, onLogout }) {
     const hasProfile = !!myProfile;
 
     // 🟢 自動感應在線狀態：只要使用者開著這個主控台，預設就是「在線上」
@@ -21,6 +21,17 @@ export default function UserDashboard({ currentUser, myProfile, onCreateResume, 
         };
     }, []);
 
+    // ─── 刪除簡歷的確認視窗邏輯 ───
+    const handleDeleteClick = () => {
+        const confirmDelete = window.confirm(
+            "⚠️ 確定要刪除您的個人簡歷嗎？\n此動作將完全清除您的履歷市集資料，且無法復原。"
+        );
+        if (confirmDelete) {
+            // 如果點選確定，就執行上層傳進來的刪除邏輯
+            onDeleteResume();
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto pt-24 pb-12 px-4 space-y-8 relative z-10">
             <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -34,14 +45,26 @@ export default function UserDashboard({ currentUser, myProfile, onCreateResume, 
             <div className="backdrop-blur-xl bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-6">
                 <div className="flex justify-between items-center border-b border-slate-850 pb-4">
                     <h2 className="text-lg font-bold text-slate-200 flex items-center gap-2"><FileText size={20} className="text-emerald-400" />我的專屬人才簡歷</h2>
-                    {/* 🌟 2. 將原本的 onCreateResume 改為 onEditResume */}
+
+                    {/* 🌟 按鈕功能群組 */}
                     {hasProfile && (
-                        <button
-                            onClick={onEditResume}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-800 text-emerald-400 hover:bg-slate-900 transition-all"
-                        >
-                            <Edit3 size={12} className="inline mr-1" />修改履歷
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {/* 修改履歷按鈕 */}
+                            <button
+                                onClick={onEditResume}
+                                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-800 text-emerald-400 hover:bg-slate-900 transition-all"
+                            >
+                                <Edit3 size={12} className="inline mr-1" />修改履歷
+                            </button>
+
+                            {/* 👑 這裡新增了「刪除簡歷」按鈕，使用精緻的微醺紅 (rose) 視覺特效 */}
+                            <button
+                                onClick={handleDeleteClick}
+                                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-slate-950 transition-all shadow-lg shadow-rose-500/5"
+                            >
+                                <Trash2 size={12} className="inline mr-1" />刪除簡歷
+                            </button>
+                        </div>
                     )}
                 </div>
 
@@ -53,7 +76,7 @@ export default function UserDashboard({ currentUser, myProfile, onCreateResume, 
                 ) : (
                     <div className="p-6 rounded-2xl bg-slate-950 border border-slate-850 space-y-4">
 
-                        {/* 🌟 全自動感知在線狀態區塊（移除手動按鈕，改為精緻狀態列） */}
+                        {/* 全自動感知在線狀態區塊 */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-slate-900/50 border-slate-800">
 
                             {/* 左側：動態狀態與動態波浪呼吸燈 */}
