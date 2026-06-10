@@ -45,6 +45,9 @@ export default function App() {
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
 
+  // 🌟 新增狀態：控制「開發者介紹」全螢幕個人網站內嵌視窗的開關
+  const [showDeveloper, setShowDeveloper] = useState(false);
+
   // 💾 1. 初始化記憶
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('hub_current_user');
@@ -296,7 +299,8 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-grow">
-        <Navbar view={view} onViewChange={setView} currentUser={currentUser} />
+        {/* 🌟 傳入控制狀態來讓 Navbar 的開發者介紹按鈕生效 */}
+        <Navbar view={view} onViewChange={setView} currentUser={currentUser} onOpenDeveloper={() => setShowDeveloper(true)} />
 
         <main className="flex-grow p-4 lg:p-8 pt-24">
 
@@ -398,7 +402,7 @@ export default function App() {
       {/* ── 👤 人才詳細彈窗 ── */}
       {modalTalent && <TalentModal talent={modalTalent} onClose={() => setModalTalent(null)} />}
 
-      {/* ── 🏢 📥 全新加入：填寫聯絡資料投遞彈窗 (Apply Form Modal) ── */}
+      {/* ── 🏢 📥 填寫聯絡資料投遞彈窗 (Apply Form Modal) ── */}
       {activeApplyJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
           <div className="w-full max-w-md p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
@@ -476,6 +480,49 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* ── 💻 📥 全新加入：開發者個人網站內嵌滿版彈窗 (Iframe Modal) ── */}
+      {showDeveloper && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10 bg-slate-950/90 backdrop-blur-md">
+          <div className="w-full h-full max-w-6xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+
+            {/* 視窗頂部控制列 */}
+            <div className="flex justify-between items-center px-6 py-4 bg-slate-950 border-b border-slate-800/80">
+              <div className="flex items-center gap-3">
+                {/* 仿 Mac 視窗的三色設計 */}
+                <div className="flex gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-rose-500 block"></span>
+                  <span className="w-3 h-3 rounded-full bg-amber-500 block"></span>
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 block"></span>
+                </div>
+                <span className="text-sm font-semibold text-slate-400 tracking-wider hidden sm:inline ml-2">
+                  DEVELOPER PORTFOLIO
+                </span>
+              </div>
+
+              {/* 關閉視窗按鈕 */}
+              <button
+                onClick={() => setShowDeveloper(false)}
+                className="text-slate-400 hover:text-white transition-colors px-4 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-bold flex items-center gap-1"
+              >
+                ✕ 關閉視窗
+              </button>
+            </div>
+
+            {/* Iframe 滿版加載區塊 */}
+            <div className="flex-grow w-full h-full bg-black relative">
+              <iframe
+                src="https://5b2g0018.github.io/5b2g0018/"
+                title="Developer Portfolio"
+                className="w-full h-full border-none"
+                loading="lazy"
+              />
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

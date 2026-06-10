@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Code, Briefcase, PlusCircle, ShieldCheck, LogOut, Palette, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Code, Briefcase, PlusCircle, ShieldCheck, LogOut, Palette, User, ChevronDown, Monitor } from 'lucide-react';
 
-// 👑 接收 view, onViewChange, currentUser 參數
-export default function Navbar({ view, onViewChange, currentUser }) {
+// 👑 接收 view, onViewChange, currentUser 參數，並新增 🌟 onOpenDeveloper
+export default function Navbar({ view, onViewChange, currentUser, onOpenDeveloper }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
 
@@ -100,7 +100,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
     { key: 'register', label: '登錄履歷', icon: PlusCircle },
   ];
 
-  // 🌟 智慧過濾：根據當前的 view 狀態，自動剔除不需要顯示的按鈕
+  // 智慧過濾：根據當前的 view 狀態，自動剔除不需要顯示的按鈕
   const filteredNavItems = navItems.filter(({ key }) => {
     if (key === 'marketplace' && (view === 'marketplace' || view === 'profile')) return false;
     if (key === 'register' && view === 'register') return false;
@@ -144,6 +144,15 @@ export default function Navbar({ view, onViewChange, currentUser }) {
                 )}
               </button>
             ))}
+
+            {/* 🌟 新增：電腦版「開發者介紹」獨立按鈕 */}
+            <button
+              onClick={onOpenDeveloper}
+              className="px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-lg cursor-pointer flex items-center space-x-1.5 text-cyan-400/90 border border-cyan-500/20 bg-cyan-500/5 hover:text-cyan-300 hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]"
+            >
+              <Monitor size={16} />
+              <span>開發者介紹</span>
+            </button>
 
             {/* 🎨 主題切換下拉選單 */}
             <div className="relative inline-flex items-center gap-1.5 ml-2" ref={dropdownRef}>
@@ -209,7 +218,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
             {/* 分隔微光線 */}
             <div className="h-4 w-[1px] bg-slate-800/80 mx-2" />
 
-            {/* 👑 獨立出來的登入狀態按鈕（確保不論在哪個頁面都不會被過濾掉） */}
+            {/* 👑 獨立出來的登入狀態按鈕 */}
             {!currentUser ? (
               <button
                 onClick={() => handleNavClick('login')}
@@ -254,7 +263,7 @@ export default function Navbar({ view, onViewChange, currentUser }) {
           }`}
       >
         <div className="px-4 py-4 space-y-2">
-          {/* 🌟 手機版過濾按鈕 */}
+          {/* 手機版過濾按鈕 */}
           {filteredNavItems.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -265,6 +274,18 @@ export default function Navbar({ view, onViewChange, currentUser }) {
               <span>{label}</span>
             </button>
           ))}
+
+          {/* 🌟 新增：手機版「開發者介紹」按鈕 */}
+          <button
+            onClick={() => {
+              setIsOpen(false); // 點擊後順手關閉漢堡排抽屜
+              onOpenDeveloper();
+            }}
+            className="w-full text-left px-4 py-3 rounded-xl text-base font-medium transition-all duration-300 flex items-center space-x-2.5 text-cyan-400 bg-cyan-500/5 border border-cyan-500/10"
+          >
+            <Monitor size={18} />
+            <span>💻 開發者介紹</span>
+          </button>
 
           {/* 手機版登入狀態 */}
           {!currentUser ? (
