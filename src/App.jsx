@@ -119,7 +119,7 @@ const MOCK_TALENTS = [
     isApproved: true,
   },
   {
-    id: "mock_5",
+    id: "job_5",
     name: '張家豪',
     title: 'iOS App 開發工程師',
     motto: '寫出好程式是藝術，讓 App 動作順暢是我的偏執。',
@@ -232,7 +232,7 @@ export default function App() {
   // ☁️ 雲端狀態：使用者帳號、人才履歷清單、🏢 職缺清單
   const [users, setUsers] = useState([]);
   const [talents, setTalents] = useState([]);
-  const [jobs, setJobs] = useState([]); // 全新：職缺狀態
+  const [jobs, setJobs] = useState(MOCK_JOBS); // 先用預設資料墊著，避免畫面空白
 
   // 💾 1. 初始化記憶：目前登入的用戶、上次停留在哪一個畫面
   const [currentUser, setCurrentUser] = useState(() => {
@@ -252,60 +252,49 @@ export default function App() {
     localStorage.setItem('hub_current_view', view);
   }, [view]);
 
-  // 🚀 2. 一開網頁或切換頁面，去 Firebase 雲端把「帳號」、「履歷」和「職缺」全部撈下來
+  // 🚀 2. 一開網頁，直接暴力初始化上傳（保證成功）
   useEffect(() => {
-    const fetchDataFromFirebase = async () => {
+    const initializeFirebaseData = async () => {
       try {
-        // --- 撈取帳號資料 ---
+        console.log("正在努力為映瑄同步資料到 Firebase 中...");
+
+        // 1. 暴力塞入職缺資料
+        for (let job of MOCK_JOBS) {
+          await setDoc(doc(db, "jobs", job.id), job);
+        }
+        console.log("🏢 8 間公司的職缺已強制同步成功！");
+
+        // 2. 暴力塞入預設人才履歷
+        for (let talent of MOCK_TALENTS) {
+          await setDoc(doc(db, "resumes", talent.id), talent);
+        }
+        console.log("👤 預設人才履歷已強制同步成功！");
+
+        // 3. 撈回最新雲端資料確保狀態同步
         const userSnapshot = await getDocs(collection(db, "app_users"));
-        const cloudUsers = [];
-        cloudUsers.push({ id: 'shadow_id', email: 'shadow@student.edu.tw', password: 'password123' });
+        const cloudUsers = [{ id: 'shadow_id', email: 'shadow@student.edu.tw', password: 'password123' }];
         userSnapshot.forEach((doc) => {
           cloudUsers.push({ id: doc.id, ...doc.data() });
         });
         setUsers(cloudUsers);
 
-        // --- 撈取人才履歷資料 ---
         const talentSnapshot = await getDocs(collection(db, "resumes"));
         const cloudTalents = [];
-        talentSnapshot.forEach((doc) => {
-          cloudTalents.push({ id: doc.id, ...doc.data() });
-        });
+        talentSnapshot.forEach((doc) => { cloudTalents.push({ id: doc.id, ...doc.data() }); });
+        setTalents(cloudTalents);
 
-        // 檢查如果履歷是空的，自動初始化補滿 5 個人
-        if (cloudTalents.length === 0) {
-          for (let talent of MOCK_TALENTS) {
-            await setDoc(doc(db, "resumes", talent.id), talent);
-          }
-          setTalents(MOCK_TALENTS);
-        } else {
-          setTalents(cloudTalents);
-        }
-
-        // --- 🏢 撈取公司職缺資料 (全新自動補底機制) ---
         const jobSnapshot = await getDocs(collection(db, "jobs"));
         const cloudJobs = [];
-        jobSnapshot.forEach((doc) => {
-          cloudJobs.push({ id: doc.id, ...doc.data() });
-        });
-
-        // 檢查如果雲端沒有職缺，自動把 8 間公司的夢幻職缺一次倒進 Firebase！
-        if (cloudJobs.length === 0) {
-          for (let job of MOCK_JOBS) {
-            await setDoc(doc(db, "jobs", job.id), job);
-          }
-          setJobs(MOCK_JOBS);
-        } else {
-          setJobs(cloudJobs);
-        }
+        jobSnapshot.forEach((doc) => { cloudJobs.push({ id: doc.id, ...doc.data() }); });
+        setJobs(cloudJobs);
 
       } catch (error) {
-        console.error("讀取 Firebase 失敗，請確認是否選取『測試模式』並已點擊規則發布：", error);
+        console.error("🔥 暴力同步失敗，原因通常是 Firebase 規則拒絕寫入：", error);
       }
     };
 
-    fetchDataFromFirebase();
-  }, [view]);
+    initializeFirebaseData();
+  }, []); // 👈 只有第一次開啟網頁時執行，不重複戳資料庫
 
   // Scroll progress 監聽
   useEffect(() => {
