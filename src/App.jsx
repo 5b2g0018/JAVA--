@@ -60,9 +60,85 @@ const MOCK_TALENTS = [
     portfolio: [
       {
         title: '微服務訂單管理系統',
-        description: '為電商平台設計的微服務架顧後端，具備高可用負載均衡、訊息佇列與自動擴縮容能力。',
+        description: '為電商平台設計的微服務架構後端，具備高可用負載均衡、訊息佇列與自動擴縮容能力。',
         image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
         tags: ['Node.js', 'Docker', 'Redis', 'PostgreSQL'],
+      },
+    ],
+    isApproved: true,
+  },
+  {
+    id: "mock_3",
+    name: '林佳瑩',
+    title: 'UI/UX 設計師 / 產品企劃',
+    motto: '用設計拉近科技與人的距離，打造直覺而優雅的體驗。',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    email: 'lin@example.com',
+    yearsOfExp: 3,
+    expectedSalary: '月薪 50,000–65,000',
+    bio: '專注於使用者經驗研究與介面設計設計，擅長從用戶痛點出發，轉化為具備商業價值的產品線稿與高保真原型。精通 Figma 元件庫與設計系統架設，能與前端工程師高效對接。曾主導多款百萬下載級 App 的 UI 改版優化。',
+    experience: [
+      { role: '資深 UI/UX 設計師', company: '酷玩數位娛樂', period: '2023.05 – 至今' },
+      { role: '介面設計師', company: '創思科技創新', period: '2021.09 – 2023.04' },
+    ],
+    education: [{ degree: '商業設計學系', school: '國立台灣科技大學', year: '2017 – 2021' }],
+    skills: ['Figma', 'Prototyping', 'User Research', 'Design System'],
+    portfolio: [
+      {
+        title: '智慧旅遊 App 規劃案',
+        description: '全面重新梳理自由行旅客的排行程痛點，透過直覺的拖拉介面與 AI 景點推薦，縮短 40% 的行程規劃時間。',
+        image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
+        tags: ['Figma', 'UI Design', 'UX Research', 'Prototype'],
+      },
+    ],
+    isApproved: true,
+  },
+  {
+    id: "mock_4",
+    name: '王大明',
+    title: '資料科學家 / Python 後端工程師',
+    motto: '數據隱藏著世界的秘密，而我是解密的人。',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+    email: 'wang@example.com',
+    yearsOfExp: 4,
+    expectedSalary: '月薪 65,000–85,000',
+    bio: '具備大數據處理與統計建模背景，擅長使用 Python 進行資料庫挖掘、機器學習模型訓練與自動化爬蟲開發。熟悉 Django 及 FastAPI 框架，能快速建立高併發的資料分析 API。',
+    experience: [
+      { role: '資料分析師', company: '未來大數據股份有限公司', period: '2022.02 – 至今' },
+    ],
+    education: [{ degree: '統計學研究所', school: '國立成功大學', year: '2019 – 2021' }],
+    skills: ['Python', 'SQL', 'FastAPI', 'Pandas', 'Machine Learning'],
+    portfolio: [
+      {
+        title: '電商平台推薦流量預測系統',
+        description: '基於機器學習演算法建構用戶行為模型，成功將商品推薦點擊率（CTR）提升了 18.5%。',
+        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+        tags: ['Python', 'Scikit-Learn', 'MySQL', 'Flask'],
+      },
+    ],
+    isApproved: true,
+  },
+  {
+    id: "mock_5",
+    name: '張家豪',
+    title: 'iOS App 開發工程師',
+    motto: '寫出好程式是藝術，讓 App 動作順暢是我的偏執。',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+    email: 'chang@example.com',
+    yearsOfExp: 3,
+    expectedSalary: '月薪 55,000–75,000',
+    bio: '專職 Swift / SwiftUI 移動端開發。熱愛封裝高效能、低耦合的 UI 組件，對記憶體洩漏調優（Memory Leaks）及併發處理有深度研究。上架過 3 款個人獨立開發的應用程式。',
+    experience: [
+      { role: 'iOS 工程師', company: '雲端聯網科技', period: '2023.01 – 至今' },
+    ],
+    education: [{ degree: '資訊管理學系', school: '國立政治大學', year: '2018 – 2022' }],
+    skills: ['Swift', 'SwiftUI', 'Combine', 'Git', 'CocoaPods'],
+    portfolio: [
+      {
+        title: '極簡風番茄鐘專注 App',
+        description: '在 App Store 上架獲得 4.8 星好評的專注工具。支援 Widget 桌面組件與動態島即時顯示。',
+        image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80',
+        tags: ['Swift', 'SwiftUI', 'CoreData', 'WidgetKit'],
       },
     ],
     isApproved: true,
@@ -166,7 +242,7 @@ export default function App() {
     }
   };
 
-  // 🚀 4. 【發布/修改履歷同步上傳】（強壯安全修正版：徹底防止 undefined 或狀態未就緒導致死機）
+  // 🚀 4. 【發布/修改履歷同步上傳】
   const handlePublish = async (newTalent) => {
     // 🔍 防禦 1：確保使用者處於正常的登入狀態
     if (!currentUser || !currentUser.email) {
@@ -179,12 +255,13 @@ export default function App() {
     const documentId = userEmail.replace(/\./g, '_');
 
     // 🔍 防禦 2：嚴格確保所有物件欄位都有預設值，絕對不丟 undefined 給 Firebase
+    // 🎨 【關鍵修改】：avatar 如果同學留空不填，改用中性的「灰色預設頭像」，不會再誤帶陳毛豆照片
     const talent = {
       id: documentId,
       name: newTalent.name || '未命名用戶',
       title: newTalent.title || '未指定職稱',
       motto: newTalent.motto || '',
-      avatar: newTalent.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+      avatar: newTalent.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
       email: userEmail,
       yearsOfExp: Number(newTalent.yearsOfExp) || 0,
       expectedSalary: newTalent.expectedSalary || '',
