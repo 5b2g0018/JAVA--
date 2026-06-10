@@ -145,6 +145,82 @@ const MOCK_TALENTS = [
   }
 ];
 
+// 🏢 ─── 8 間不同公司職缺訊息 (全新擴充) ──────────────────────────────────────────
+const MOCK_JOBS = [
+  {
+    id: "job_1",
+    companyName: "極光森林科技 (Aurora Tech)",
+    title: "前端 React 開發工程師",
+    salary: "月薪 50,000 - 70,000 元",
+    location: "台北市信義區",
+    description: "負責核心人才媒合平台的新功能迭代，優化前端網頁載入速度與防禦邏輯，需熟悉 React 18 與 Tailwind CSS。",
+    applicants: []
+  },
+  {
+    id: "job_2",
+    companyName: "台積電 (TSMC)",
+    title: "IT 軟體核心系統工程師",
+    salary: "年薪 1,200,000 - 1,800,000 元",
+    location: "新竹科學園區",
+    description: "維護晶圓廠內部高併發自動化排程系統，設計高穩定度後端 API。要求具備 Python/Node.js 或資料科學建模底子。",
+    applicants: []
+  },
+  {
+    id: "job_3",
+    companyName: "蝦皮購物 (Shopee)",
+    title: "高流量電商全端工程師",
+    salary: "月薪 80,000 - 110,000 元",
+    location: "台北市松山區",
+    description: "主導大型購物節促銷系統優化，處理高併發應答與快取控制（Redis）。需具備 React 與 Node.js 實戰開發經驗。",
+    applicants: []
+  },
+  {
+    id: "job_4",
+    companyName: "星宇航空 (STARLUX)",
+    title: "UI/UX 使用者經驗體驗設計師",
+    salary: "月薪 55,000 - 68,000 元",
+    location: "桃園市大園區",
+    description: "負責全球旅客購票系統與行動端 App 的介面優化，規劃直覺、輕奢優雅的訂位流程。精通 Figma 設計系統架設。",
+    applicants: []
+  },
+  {
+    id: "job_5",
+    companyName: "微雲數位娛樂 (Nebula Games)",
+    title: "iOS 遊戲社群 App 工程師",
+    salary: "月薪 60,000 - 75,000 元",
+    location: "台中市西屯區",
+    description: "運用 Swift / SwiftUI 開發新世代玩家語音社群 App，優化即時通訊品質與桌面 WidgetKit 組件互動體驗。",
+    applicants: []
+  },
+  {
+    id: "job_6",
+    companyName: "國泰金控 (Cathay FHC)",
+    title: "FinTech 數位金融資料科學家",
+    salary: "月薪 65,000 - 85,000 元",
+    location: "台北市大安區",
+    description: "利用大數據分析建構信用風險預測模型，提升智慧推播精準度。需熟悉 Python、SQL 與機器學習演算法。",
+    applicants: []
+  },
+  {
+    id: "job_7",
+    companyName: "美味生活電商 (GoodFood)",
+    title: "社群媒體企劃 / 網站主理人",
+    salary: "月薪 40,000 - 52,000 元",
+    location: "高雄市苓雅區",
+    description: "負責品牌社群平台的視覺包裝與行銷企劃，並能使用簡明的前端技術配合調整活動促銷頁面。",
+    applicants: []
+  },
+  {
+    id: "job_8",
+    companyName: "網銀國際 (Wanin International)",
+    title: "資深 DevOps 雲端維運工程師",
+    salary: "月薪 75,000 - 100,000 元",
+    location: "台中市大里區",
+    description: "負責大型線上遊戲伺服器架構維護，設計自動化 CI/CD 流程。必須精通 Docker, AWS 雲端服務與負載均衡控制。",
+    applicants: []
+  }
+];
+
 // ─── App Component ───────────────────────────────────────────────────────────
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -153,9 +229,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
 
-  // ☁️ 雲端狀態：使用者帳號、人才履歷清單
+  // ☁️ 雲端狀態：使用者帳號、人才履歷清單、🏢 職缺清單
   const [users, setUsers] = useState([]);
   const [talents, setTalents] = useState([]);
+  const [jobs, setJobs] = useState([]); // 全新：職缺狀態
 
   // 💾 1. 初始化記憶：目前登入的用戶、上次停留在哪一個畫面
   const [currentUser, setCurrentUser] = useState(() => {
@@ -175,14 +252,13 @@ export default function App() {
     localStorage.setItem('hub_current_view', view);
   }, [view]);
 
-  // 🚀 2. 一開網頁或切換頁面，去 Firebase 雲端把「註冊帳號」和「履歷資料」撈下來
+  // 🚀 2. 一開網頁或切換頁面，去 Firebase 雲端把「帳號」、「履歷」和「職缺」全部撈下來
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
         // --- 撈取帳號資料 ---
         const userSnapshot = await getDocs(collection(db, "app_users"));
         const cloudUsers = [];
-        // 預設內建的測試帳號
         cloudUsers.push({ id: 'shadow_id', email: 'shadow@student.edu.tw', password: 'password123' });
         userSnapshot.forEach((doc) => {
           cloudUsers.push({ id: doc.id, ...doc.data() });
@@ -196,7 +272,7 @@ export default function App() {
           cloudTalents.push({ id: doc.id, ...doc.data() });
         });
 
-        // 如果雲端空空如也，自動把 Mock Data 塞進雲端當初始值
+        // 檢查如果履歷是空的，自動初始化補滿 5 個人
         if (cloudTalents.length === 0) {
           for (let talent of MOCK_TALENTS) {
             await setDoc(doc(db, "resumes", talent.id), talent);
@@ -205,6 +281,24 @@ export default function App() {
         } else {
           setTalents(cloudTalents);
         }
+
+        // --- 🏢 撈取公司職缺資料 (全新自動補底機制) ---
+        const jobSnapshot = await getDocs(collection(db, "jobs"));
+        const cloudJobs = [];
+        jobSnapshot.forEach((doc) => {
+          cloudJobs.push({ id: doc.id, ...doc.data() });
+        });
+
+        // 檢查如果雲端沒有職缺，自動把 8 間公司的夢幻職缺一次倒進 Firebase！
+        if (cloudJobs.length === 0) {
+          for (let job of MOCK_JOBS) {
+            await setDoc(doc(db, "jobs", job.id), job);
+          }
+          setJobs(MOCK_JOBS);
+        } else {
+          setJobs(cloudJobs);
+        }
+
       } catch (error) {
         console.error("讀取 Firebase 失敗，請確認是否選取『測試模式』並已點擊規則發布：", error);
       }
@@ -224,12 +318,11 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 🚀 3. 【註冊功能同步上傳】當有新用戶在 AuthForm 註冊時，同步上傳 Firebase
+  // 🚀 3. 【註冊功能同步上傳】
   const handleSetUsers = async (updatedUsers) => {
     try {
       const newUser = updatedUsers[updatedUsers.length - 1];
       if (newUser && newUser.email && newUser.email !== 'shadow@student.edu.tw') {
-        // 以 email 作為雲端文件的 ID，把帳號密碼存上去
         await setDoc(doc(db, "app_users", newUser.email), {
           email: newUser.email,
           password: newUser.password,
@@ -244,7 +337,6 @@ export default function App() {
 
   // 🚀 4. 【發布/修改履歷同步上傳】
   const handlePublish = async (newTalent) => {
-    // 🔍 防禦 1：確保使用者處於正常的登入狀態
     if (!currentUser || !currentUser.email) {
       alert('登入狀態異常或已逾時，請重新登入後再發布履歷！');
       setView('login');
@@ -254,8 +346,6 @@ export default function App() {
     const userEmail = String(currentUser.email);
     const documentId = userEmail.replace(/\./g, '_');
 
-    // 🔍 防禦 2：嚴格確保所有物件欄位都有預設值，絕對不丟 undefined 給 Firebase
-    // 🎨 【關鍵修改】：avatar 如果同學留空不填，改用中性的「灰色預設頭像」，不會再誤帶陳毛豆照片
     const talent = {
       id: documentId,
       name: newTalent.name || '未命名用戶',
@@ -270,32 +360,49 @@ export default function App() {
       education: newTalent.education || [],
       skills: newTalent.skills || [],
       portfolio: newTalent.portfolio || [],
-      isApproved: false // 每次修改或新發布，重新送交管理員審核
+      isApproved: false
     };
 
     try {
-      console.log("正在嘗試發布資料至 Firebase，文件ID:", documentId, talent);
-
-      // 指定 ID 寫入雲端 Firestore
       await setDoc(doc(db, "resumes", documentId), talent);
-
-      // 先同步更新 React 當地狀態，防止切換頁面時畫面不同步
       setTalents(prev => {
         const exists = prev.some(t => t.id === documentId);
         if (exists) return prev.map(t => t.id === documentId ? talent : t);
         return [...prev, talent];
       });
-
       alert('🎉 履歷已成功發布/同步至雲端資料庫！請等待管理員進行上架審核。');
-
-      // 給予 Firebase 300 毫秒的背景寫入緩衝時間，再優雅跳轉
-      setTimeout(() => {
-        setView('dashboard');
-      }, 300);
-
+      setTimeout(() => { setView('dashboard'); }, 300);
     } catch (error) {
       console.error("🔥 Firebase 寫入失敗原因:", error);
-      alert(`儲存至雲端失敗！錯誤資訊: ${error.message}。請檢查 Firebase 安全性規則！`);
+      alert(`儲存至雲端失敗！錯誤資訊: ${error.message}`);
+    }
+  };
+
+  // 🚀 全新功能：【投遞職缺履歷】
+  const handleApplyJob = async (jobId) => {
+    if (!currentUser) {
+      alert("請先登入會員再投遞履歷！");
+      setView("login");
+      return;
+    }
+
+    try {
+      const targetJob = jobs.find(j => j.id === jobId);
+      if (targetJob.applicants.includes(currentUser.email)) {
+        alert("您已經投遞過這家公司囉！");
+        return;
+      }
+
+      const updatedApplicants = [...targetJob.applicants, currentUser.email];
+
+      // 更新雲端 Firebase 資料
+      await updateDoc(doc(db, "jobs", jobId), { applicants: updatedApplicants });
+
+      // 更新當地狀態
+      setJobs(prev => prev.map(j => j.id === jobId ? { ...j, applicants: updatedApplicants } : j));
+      alert(`🎉 成功投遞！您的履歷已送出給 ${targetJob.companyName}。`);
+    } catch (error) {
+      console.error("投遞失敗：", error);
     }
   };
 
@@ -303,11 +410,10 @@ export default function App() {
   const handleUserDeleteResume = async () => {
     if (!currentUser || !currentUser.email) return;
     const documentId = currentUser.email.replace(/\./g, '_');
-
     try {
       await deleteDoc(doc(db, "resumes", documentId));
       setTalents(prev => prev.filter(t => t.id !== documentId));
-      alert('🗑️ 您的個人簡歷已成功從雲端資料庫移除，並從人才市集下架。');
+      alert('🗑️ 您的個人簡歷已成功從雲端資料庫移除。');
     } catch (error) {
       console.error("刪除失敗:", error);
     }
@@ -317,9 +423,7 @@ export default function App() {
   const handleApproveToggle = async (id, approve) => {
     try {
       await updateDoc(doc(db, "resumes", id), { isApproved: approve });
-      setTalents(prev =>
-        prev.map(t => (t.id === id ? { ...t, isApproved: approve } : t))
-      );
+      setTalents(prev => prev.map(t => (t.id === id ? { ...t, isApproved: approve } : t)));
     } catch (error) {
       console.error("審核變更失敗:", error);
     }
