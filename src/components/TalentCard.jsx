@@ -1,22 +1,37 @@
 import React from 'react';
-import { User, Mail, Briefcase, Clock, DollarSign, ArrowRight } from 'lucide-react';
+import { User, Mail, Briefcase, Clock, DollarSign, ArrowRight, Heart } from 'lucide-react';
 
-/* 👑 接收從 App.jsx 傳進來的 currentUser */
-export default function TalentCard({ talent, currentUser, onViewProfile }) {
+/* 👑 接收從 App.jsx 傳進來的屬性，包含收藏狀態 isFavorite 與切換方法 onToggleFavorite */
+export default function TalentCard({ talent, currentUser, onViewProfile, isFavorite, onToggleFavorite }) {
   const displaySkills = talent.skills ? talent.skills.slice(0, 3) : [];
 
   /* 👑 【正確邏輯修正】
-     只有當「有使用者登入(currentUser存在)」且「登入者的 id 符合這張卡片的 id」時，
-     才代表這個人才目前在線上，isOnline 才會是 true！ */
+      只有當「有使用者登入(currentUser存在)」且「登入者的 id 符合這張卡片的 id」時，
+      才代表這個人才目前在線上，isOnline 才會是 true！ */
   const isOnline = currentUser && currentUser.id === talent.id;
 
   return (
     <div
       onClick={onViewProfile}
-      className="group glass-panel rounded-3xl overflow-hidden border border-slate-800/80 bg-slate-900/20 hover:bg-slate-900/50 hover:border-emerald-500/30 hover:shadow-[0_0_40px_rgba(16,185,129,0.12)] transition-all duration-500 hover:-translate-y-2 flex flex-col h-full cursor-pointer"
+      className="group glass-panel rounded-3xl overflow-hidden border border-slate-800/80 bg-slate-900/20 hover:bg-slate-900/50 hover:border-emerald-500/30 hover:shadow-[0_0_40px_rgba(16,185,129,0.12)] transition-all duration-500 hover:-translate-y-2 flex flex-col h-full cursor-pointer relative"
     >
       {/* Top gradient accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+      {/* 💖 絕美霓虹愛心收藏按鈕 */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // 🚀 核心防呆：防止點擊愛心時同時觸發打開履歷彈窗
+          onToggleFavorite(talent.id);
+        }}
+        className={`absolute top-4 right-4 z-10 p-2 rounded-xl border transition-all duration-300 backdrop-blur-md cursor-pointer ${isFavorite
+            ? 'bg-rose-500/15 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)] scale-105'
+            : 'bg-slate-950/40 border-slate-800/80 text-slate-500 hover:text-rose-400 hover:border-rose-500/30 hover:scale-105'
+          }`}
+        title={isFavorite ? '取消收藏' : '收藏人才'}
+      >
+        <Heart size={14} className={isFavorite ? 'fill-rose-400 stroke-[2.5]' : 'stroke-[2]'} />
+      </button>
 
       <div className="p-6 flex flex-col h-full">
         {/* Avatar + Name Row */}
@@ -43,7 +58,8 @@ export default function TalentCard({ talent, currentUser, onViewProfile }) {
             )}
           </div>
 
-          <div className="flex-1 overflow-hidden">
+          {/* 調整寬度阻擋字體爆出去，保留空間給右側愛心 */}
+          <div className="flex-1 overflow-hidden pr-6">
             <h3 className="text-base font-bold text-slate-100 group-hover:text-emerald-400 transition-colors duration-300 truncate">
               {talent.name}
             </h3>

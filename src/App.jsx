@@ -40,13 +40,33 @@ export default function App() {
   const [jobs, setJobs] = useState(MOCK_JOBS);
 
   // 🛠️ 填寫聯絡資料彈窗的控制狀態
-  const [activeApplyJob, setActiveApplyJob] = useState(null); // 當前正在投遞的 job 物件
+  const [activeApplyJob, setActiveApplyJob] = useState(null);
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
 
   // 🌟 新增狀態：控制「開發者介紹」全螢幕個人網站內嵌視窗的開關
   const [showDeveloper, setShowDeveloper] = useState(false);
+
+  // 💖 核心功能：初始化收藏名單 (從 localStorage 讀取以防重新整理後消失)
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem('hub_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // 監聽收藏狀態變化，自動同步回本地快取
+  useEffect(() => {
+    localStorage.setItem('hub_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  // 切換收藏狀態的方法
+  const handleToggleFavorite = (talentId) => {
+    setFavorites(prev =>
+      prev.includes(talentId)
+        ? prev.filter(id => id !== talentId)
+        : [...prev, talentId]
+    );
+  };
 
   // 💾 1. 初始化記憶
   const [currentUser, setCurrentUser] = useState(() => {
@@ -171,7 +191,6 @@ export default function App() {
       return;
     }
 
-    // 防呆：檢查是否重複投遞
     const hasApplied = job.applicants?.some(app =>
       (typeof app === 'string' && app === currentUser.email) ||
       (typeof app === 'object' && app.email === currentUser.email)
@@ -181,12 +200,11 @@ export default function App() {
       return;
     }
 
-    // 自動預填資料（如果他在市集有填過履歷就自動抓，沒填就抓他的登入信箱）
     const myProfile = talents.find(t => t.email === currentUser.email);
     setContactName(myProfile ? myProfile.name : '');
     setContactEmail(currentUser.email);
-    setContactPhone(''); // 手機讓他自己填
-    setActiveApplyJob(job); // 鎖定目前要投遞的職缺，打開彈窗
+    setContactPhone('');
+    setActiveApplyJob(job);
   };
 
   // 🚀 5-B. 【彈出視窗內按下確認：正式送出到 Firebase】
@@ -201,7 +219,6 @@ export default function App() {
       const jobId = activeApplyJob.id;
       const targetJob = jobs.find(j => j.id === jobId);
 
-      // 封裝包含「姓名、信箱、電話、時間」的完整應徵包裹
       const applicationPack = {
         email: contactEmail.trim(),
         name: contactName.trim(),
@@ -211,14 +228,11 @@ export default function App() {
 
       const updatedApplicants = [...(targetJob.applicants || []), applicationPack];
 
-      // 更新到雲端 Firebase
       await updateDoc(doc(db, "jobs", jobId), { applicants: updatedApplicants });
-
-      // 更新本地狀態
       setJobs(prev => prev.map(j => j.id === jobId ? { ...j, applicants: updatedApplicants } : j));
 
       alert(`🎉 投遞成功！您的聯絡資料已送出給 ${targetJob.companyName}。`);
-      setActiveApplyJob(null); // 關閉彈窗
+      setActiveApplyJob(null);
     } catch (error) {
       console.error("投遞失敗：", error);
       alert("投遞發生錯誤，請稍後再試！");
@@ -299,7 +313,6 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-grow">
-        {/* 🌟 傳入控制狀態來讓 Navbar 的開發者介紹按鈕生效 */}
         <Navbar view={view} onViewChange={setView} currentUser={currentUser} onOpenDeveloper={() => setShowDeveloper(true)} />
 
         <main className="flex-grow p-4 lg:p-8 pt-24">
@@ -332,7 +345,15 @@ export default function App() {
                 {subTab === 'talents' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredTalents.map(t => (
-                      <TalentCard key={t.id} talent={t} currentUser={currentUser} onViewProfile={() => setModalTalent(t)} />
+                      /* 🌟 傳入收藏狀態控制與切換方法到 TalentCard 元件 */
+                      <TalentCard
+                        key={t.id}
+                        talent={t}
+                        currentUser={currentUser}
+                        onViewProfile={() => setModalTalent(t)}
+                        isFavorite={favorites.includes(t.id)}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -370,7 +391,19 @@ export default function App() {
 
           {view === 'dashboard' && currentUser && (
             <div className="max-w-4xl mx-auto w-full space-y-6">
-              <UserDashboard currentUser={currentUser} myProfile={talents.find(t => t.email === currentUser.email) || null} onCreateResume={() => setView('register')} onEditResume={() => setView('register')} onDeleteResume={handleUserDeleteResume} onLogout={() => { setCurrentUser(null); localStorage.removeItem('hub_current_user'); setView('marketplace'); }} />
+              {/* 🌟 修改此處：將 favorites 相關狀態與所有人才陣列一併傳給 UserDashboard */}
+              <UserDashboard
+                currentUser={currentUser}
+                myProfile={talents.find(t => t.email === currentUser.email) || null}
+                talents={talents}
+                favorites={favorites}
+                onToggleFavorite={handleToggleFavorite}
+                onViewChange={setView}
+                onCreateResume={() => setView('register')}
+                onEditResume={() => setView('register')}
+                onDeleteResume={handleUserDeleteResume}
+                onLogout={() => { setCurrentUser(null); localStorage.removeItem('hub_current_user'); setView('marketplace'); }}
+              />
 
               {/* 求職紀錄歷史看板 */}
               <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800">
@@ -489,7 +522,6 @@ export default function App() {
             {/* 視窗頂部控制列 */}
             <div className="flex justify-between items-center px-6 py-4 bg-slate-950 border-b border-slate-800/80">
               <div className="flex items-center gap-3">
-                {/* 仿 Mac 視窗的三色設計 */}
                 <div className="flex gap-1.5">
                   <span className="w-3 h-3 rounded-full bg-rose-500 block"></span>
                   <span className="w-3 h-3 rounded-full bg-amber-500 block"></span>
@@ -500,7 +532,6 @@ export default function App() {
                 </span>
               </div>
 
-              {/* 關閉視窗按鈕 */}
               <button
                 onClick={() => setShowDeveloper(false)}
                 className="text-slate-400 hover:text-white transition-colors px-4 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-bold flex items-center gap-1"
