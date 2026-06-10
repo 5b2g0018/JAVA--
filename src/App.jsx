@@ -7,14 +7,17 @@ import TalentModal from './components/TalentModal';
 import RegisterForm from './components/RegisterForm';
 import TalentProfile from './components/TalentProfile';
 import AdminPanel from './components/AdminPanel';
-// 🌟 完美引入的登入/註冊元件與會員控制台元件
 import AuthForm from './components/AuthForm';
 import UserDashboard from './components/UserDashboard';
 
-// ─── Rich Mock Data (10 Rich Talents Included) ───────────────────────────────
+// 🌟 核心步驟：引入你建立的 Firebase 資料庫實例
+import { db } from './firebase';
+import { collection, doc, setDoc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
+
+// ─── Rich Mock Data (當雲端完全沒有任何資料時，自動初始化進雲端) ───────────────────────────────
 const MOCK_TALENTS = [
   {
-    id: 1,
+    id: "mock_1",
     name: '陳毛豆',
     title: '前端工程師 / 社群企劃',
     motto: '熱愛學習新技術，用程式解決生活中的大小事。',
@@ -36,17 +39,11 @@ const MOCK_TALENTS = [
         image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
         tags: ['React', 'OpenAI API', 'Tailwind CSS', 'LocalStorage'],
       },
-      {
-        title: 'TalentHub 人才市集平台',
-        description: '多人數位履歷展示平台，支援人才登錄、篩選搜尋、管理員審核與完整個人履歷瀏覽。',
-        image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=800&q=80',
-        tags: ['React', 'Vite', 'Tailwind CSS', 'LocalStorage'],
-      },
     ],
     isApproved: true,
   },
   {
-    id: 2,
+    id: "mock_2",
     name: '李季',
     title: '全端工程師 / DevOps',
     motto: '從前端到後端，我熱愛每一行程式碼帶來的可能性。',
@@ -57,8 +54,6 @@ const MOCK_TALENTS = [
     bio: '擁有 5 年全端開發經驗，專精 Node.js 後端 API 設計與 React 前端架構。對 CI/CD 流程與雲端部署（AWS, GCP）有豐富實戰經驗。善於溝通，具備帶領小型開發團隊的能力，並熱愛運用 AI 工具加速產品迭代。目前尋求能挑戰技術深度並參與開源貢獻的機會。',
     experience: [
       { role: '全端工程師', company: '數位浪潮科技', period: '2022.08 – 至今' },
-      { role: 'Node.js 後端工程師', company: '新創加速器 ABC Labs', period: '2021.03 – 2022.07' },
-      { role: '軟體工程師實習生', company: '台灣大哥大', period: '2020.07 – 2021.02' },
     ],
     education: [{ degree: '電機工程學系', school: '國立台灣大學', year: '2016 – 2020' }],
     skills: ['Node.js', 'React', 'TypeScript', 'Docker', 'AWS'],
@@ -69,225 +64,8 @@ const MOCK_TALENTS = [
         image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
         tags: ['Node.js', 'Docker', 'Redis', 'PostgreSQL'],
       },
-      {
-        title: '即時協作白板工具',
-        description: '基於 WebSocket 的多人即時協作繪圖工具，支援無限畫布、形狀工具與版本歷史記錄。',
-        image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?auto=format&fit=crop&w=800&q=80',
-        tags: ['React', 'Socket.io', 'Canvas API', 'TypeScript'],
-      },
     ],
     isApproved: true,
-  },
-  {
-    id: 3,
-    name: '陳建宏',
-    title: 'AI 研究員 / 機器學習工程師',
-    motto: '深信 AI 不正式工具，更是改變人類思維的革命。',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
-    email: 'chen@example.com',
-    yearsOfExp: 4,
-    expectedSalary: '月薪 80,000–110,000',
-    bio: '專注於自然語言處理（NLP）與電腦視覺領域的 AI 研究員，有學術論文發表經驗。熟悉 PyTorch、HuggingFace 等主流 AI 框架，以及大型語言模型的微調（Fine-tuning）與部署。熱衷於將研究成果轉化為實際應用，並具備優秀的跨領域協作與技術溝通能力。',
-    experience: [
-      { role: 'AI 研究員', company: '中央研究院資訊所', period: '2023.09 – 至今' },
-      { role: '機器學習工程師', company: '趨勢科技', period: '2021.06 – 2023.08' },
-    ],
-    education: [
-      { degree: '資訊科學博士班（修業中）', school: '國立陽明交通大學', year: '2023 – 至今' },
-      { degree: '資訊工程學系碩士', school: '國立清華大學', year: '2019 – 2021' },
-    ],
-    skills: ['Python', 'SQL / Database', 'PyTorch', 'LLM Tuning'],
-    portfolio: [
-      {
-        title: '繁體中文情感分析模型',
-        description: '基於 BERT 架構微調的繁中情感分析模型，準確率達 93.2%，已整合至客服系統協助判斷用戶情緒。',
-        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
-        tags: ['Python', 'PyTorch', 'HuggingFace', 'NLP'],
-      },
-      {
-        title: 'AI 履歷篩選助理',
-        description: '協助 HR 自動解析應徵者履歷 PDF，以 AI 摘要關鍵能力並評分，大幅縮短初篩時間。',
-        image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=800&q=80',
-        tags: ['Python', 'LangChain', 'OpenAI API', 'FastAPI'],
-      },
-    ],
-    isApproved: true,
-  },
-  {
-    id: 4,
-    name: '黃斜豆',
-    title: '全端實習生 / 學生',
-    motto: '沒有解決不了的 Bug，只有不夠肝的工程師！目前努力刷題中。',
-    avatar: '',
-    email: 'shadow@student.edu.tw',
-    yearsOfExp: 0,
-    expectedSalary: '時薪 200–250',
-    bio: '目前是資工系大四學生，熱衷於全端 Web 開發與自動化腳本編寫。熟悉基本網頁技術並積極參與開源社群。個性樂觀、抗壓性強，能快速吸收新知識，目前正努力刷 LeetCode 尋求軟體開發實習機會。',
-    experience: [
-      { role: '校園網路中心助理', company: '大學計算機中心', period: '2023.09 – 至今' }
-    ],
-    education: [{ degree: '資訊工程學系', school: '逢甲大學', year: '2022 – 2026' }],
-    skills: ['Node.js', 'Python', 'HTML / CSS', 'Git'],
-    portfolio: [
-      {
-        title: '智慧校園導覽 App',
-        description: '大三期末專題作品，利用路徑演算法規劃校園內最短步行導覽路線。',
-        image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80',
-        tags: ['Java', 'Android', 'SQLite Studio'],
-      }
-    ],
-    isApproved: false,
-  },
-  {
-    id: 5,
-    name: '林思妤',
-    title: 'UI/UX 設計師 / 前端愛好者',
-    motto: '好的設計能說故事，好的程式碼能賦予它靈魂。',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    email: 'lin.design@example.com',
-    yearsOfExp: 3,
-    expectedSalary: '月薪 50,000–65,000',
-    bio: '專注於使用者經驗（UX）研究與視覺設計（UI）的設計師。擅長使用 Figma 建立完整的設計系統（Design System），並具備良好的 Tailwind CSS 編寫能力，能與前端工程師無縫對接。',
-    experience: [
-      { role: 'UI/UX 設計師', company: '美感數位互動', period: '2022.05 – 至今' }
-    ],
-    education: [{ degree: '商業設計學系', school: '國立臺灣科技大學', year: '2018 – 2022' }],
-    skills: ['Figma', 'UI/UX', 'Tailwind CSS', 'Next.js'],
-    portfolio: [
-      {
-        title: '虛擬貨幣交易所介面優化',
-        description: '耗時三個月進行使用者調研，重新定義數位資產的視覺排版與交易下單操作流暢度。',
-        image: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=800&q=80',
-        tags: ['Figma', 'UIUX Design', 'User Research'],
-      }
-    ],
-    isApproved: true,
-  },
-  {
-    id: 6,
-    name: '張家豪',
-    title: '後端資深工程師 / 資料庫專家',
-    motto: '資料庫優化一條索引，勝過前端重構一萬行。',
-    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
-    email: 'chang.db@example.com',
-    yearsOfExp: 7,
-    expectedSalary: '月薪 95,000–130,000',
-    bio: '具備 7 年大型分散式系統開發經驗的後端老手。精通高併發架構設計、微服務架構與關聯式資料庫深度優化.處理過百萬級日活躍用戶數據。',
-    experience: [
-      { role: '資深核心後端工程師', company: '獵豹跨國電商平台', period: '2020.01 – 至今' },
-      { role: '後端工程師', company: '國泰金控數數發中心', period: '2018.02 – 2019.12' }
-    ],
-    education: [{ degree: '資訊管理學系碩士', school: '國立交通大學', year: '2015 – 2017' }],
-    skills: ['MySQL', 'PostgreSQL', 'Golang', 'Redis', 'Kafka'],
-    portfolio: [
-      {
-        title: '分散式巨量日誌收集系統',
-        description: '使用 Golang 開發高吞吐量的數據流核心，每日穩定處理超過億級的日誌行為數據。',
-        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
-        tags: ['Golang', 'Kafka', 'Elasticsearch'],
-      }
-    ],
-    isApproved: true,
-  },
-  {
-    id: 7,
-    name: '周杰克',
-    title: 'iOS App 開發工程師',
-    motto: '專注於極致的 Apple 美學與流暢的物理動畫互動。',
-    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=400&q=80',
-    email: 'jay.ios@example.com',
-    yearsOfExp: 3,
-    expectedSalary: '月薪 65,000–80,000',
-    bio: '專注於原生 iOS App 開發，極度熱愛 SwiftUI 與現代化宣告式 UI 開發。追求畫面的流暢刷新率與系統底層效能的平衡。',
-    experience: [
-      { role: 'iOS 工程師', company: '獨立 App 軟體工作室', period: '2023.01 – 至今' }
-    ],
-    education: [{ degree: '數位媒體設計學系', school: '元智大學', year: '2018 – 2022' }],
-    skills: ['Swift', 'SwiftUI', 'CoreData', 'Combine'],
-    portfolio: [
-      {
-        title: '番茄鐘極簡 productivity 工具',
-        description: '上架於 App Store 獲得 4.8 星高評分的質感專注工具，支援動態島與桌面 Widget。',
-        image: 'https://images.unsplash.com/photo-1616763355548-1b606f439f86?auto=format&fit=crop&w=800&q=80',
-        tags: ['SwiftUI', 'Dynamic Island', 'App Store'],
-      }
-    ],
-    isApproved: false,
-  },
-  {
-    id: 8,
-    name: '許婉婷',
-    title: '雲端架構師 / SRE 工程師',
-    motto: '自動化維運是一切軟體優雅穩定運作的基石。',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-    email: 'wt.hsu@example.com',
-    yearsOfExp: 4,
-    expectedSalary: '月薪 85,000–105,000',
-    bio: '擁有 AWS 專家級認證的雲端架構師。專長基礎設施即程式碼（IaC），協助過多個傳統企業將在地伺服器成功無縫搬遷上雲。',
-    experience: [
-      { role: '雲端架構顧問', company: '國際外商雲端整合服務', period: '2022.03 – 至今' }
-    ],
-    education: [{ degree: '通訊工程學系', school: '國立成功大學', year: '2016 – 2020' }],
-    skills: ['AWS', 'Kubernetes', 'CI/CD', 'Terraform'],
-    portfolio: [
-      {
-        title: '跨國多雲自動化備援計畫',
-        description: '運用 Terraform 自動部署異地備援基礎設施，實現災難復原 RTO < 5 分鐘的高可用指標。',
-        image: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=800&q=80',
-        tags: ['Terraform', 'AWS Lambda', 'SRE'],
-      }
-    ],
-    isApproved: true,
-  },
-  {
-    id: 9,
-    name: '吳冠宇',
-    title: '區塊鏈合約工程師',
-    motto: 'Code is Law. 在鏈上的世界裡，容不得任何一絲粗心。',
-    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
-    email: 'wu.crypto@example.com',
-    yearsOfExp: 3,
-    expectedSalary: '月薪 90,000–120,000',
-    bio: '深耕 Web3 生態系的技術開發者，專精以太坊 Solidity 智能合約安全編寫，熟悉各類 DeFi 協議機制，對 EVM 底層有深入的認知。',
-    experience: [
-      { role: '智能合約工程師', company: '新加坡區塊鏈新創基金', period: '2023.05 – 至今' }
-    ],
-    education: [{ degree: '資訊工程學系', school: '國立清華大學', year: '2019 – 2023' }],
-    skills: ['Solidity', 'Web3.js', 'Ethereum', 'Rust', 'Hardhat'],
-    portfolio: [
-      {
-        title: 'DeFi 去中心化質押借貸協議',
-        description: '編寫並通過慢霧科技安全審計的 ERC-20 鎖倉利息合約，鏈上總鎖倉量(TVL)曾突破百萬美金。',
-        image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=80',
-        tags: ['Solidity', 'Hardhat', 'ERC20'],
-      }
-    ],
-    isApproved: true,
-  },
-  {
-    id: 10,
-    name: '林冠亨',
-    title: '技術專案經理 / 敏捷教練',
-    motto: '程式碼用來跟機器溝通，而我的工作是讓技術團隊達成共識。',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80',
-    email: 'andy.liu@example.com',
-    yearsOfExp: 6,
-    expectedSalary: '月薪 80,000–100,000',
-    bio: '具有技術背景的專案經理（PMP），致力於在團隊中推廣 Agile 與 Scrum 敏捷敏捷開發流程，消除部門壁垒並提高產品交付速度。',
-    experience: [
-      { role: 'Technical Project Manager', company: '軟體跨國研發中心', period: '2021.10 – 至今' }
-    ],
-    education: [{ degree: '企業管理學系學士', school: '國立政治大學', year: '2014 – 2018' }],
-    skills: ['Scrum', 'Project Management', 'Jira', 'Agile Engineering'],
-    portfolio: [
-      {
-        title: '大型產品線敏捷轉型引導',
-        description: '帶領 60 人團隊由傳統瀑布式成功轉型為雙週衝刺的 Scrum架構，使功能上線產出提升 35%。',
-        image: 'https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=800&q=80',
-        tags: ['Agile', 'Scrum Coaching', 'Jira Software'],
-      }
-    ],
-    isApproved: false,
   }
 ];
 
@@ -299,38 +77,19 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
 
-  // 👑 模擬純前端的使用者資料庫（預設給一個測試用會員，其綁定了 id: 4 黃斜豆的履歷）
-  const [users, setUsers] = useState(() => {
-    const defaultUsers = [{ id: 4, email: 'shadow@student.edu.tw', password: 'password123' }];
-    const storedUsers = JSON.parse(localStorage.getItem('app_users') || '[]');
-    // 合併預設與註冊用戶，防重複
-    const merged = [...defaultUsers];
-    storedUsers.forEach(su => {
-      if (!merged.some(u => u.email === su.email)) merged.push(su);
-    });
-    return merged;
-  });
+  // ☁️ 雲端狀態：使用者帳號、人才履歷清單
+  const [users, setUsers] = useState([]);
+  const [talents, setTalents] = useState([]);
 
-  // 💾 1. 【重大修正】狀態初始化函數：網頁開機的第一秒，優先從保險箱取回整份人才庫狀態
-  const [talents, setTalents] = useState(() => {
-    const saved = localStorage.getItem('hub_talents_all');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return MOCK_TALENTS; // 第一次開網頁才用預設的
-  });
-
-  // 💾 2. 自動記憶：目前登入的用戶（初始化時直接從 localStorage 讀取紀錄）
+  // 💾 1. 初始化記憶：目前登入的用戶、上次停留在哪一個畫面
   const [currentUser, setCurrentUser] = useState(() => {
     const savedUser = localStorage.getItem('hub_current_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  // 💾 3. 自動記憶：上次停留在哪一個畫面
   const [view, setView] = useState(() => {
     const savedView = localStorage.getItem('hub_current_view');
     if (savedView) return savedView;
-
     const savedUser = localStorage.getItem('hub_current_user');
     return savedUser ? 'dashboard' : 'marketplace';
   });
@@ -340,12 +99,45 @@ export default function App() {
     localStorage.setItem('hub_current_view', view);
   }, [view]);
 
-  // 💾 4. 【重大修正】完整存檔：任何審核狀態（核准、刪除、新增）變動時，無條件整份保存
+  // 🚀 2. 一開網頁或切換頁面，去 Firebase 雲端把「註冊帳號」和「履歷資料」撈下來
   useEffect(() => {
-    localStorage.setItem('hub_talents_all', JSON.stringify(talents));
-  }, [talents]);
+    const fetchDataFromFirebase = async () => {
+      try {
+        // --- 撈取帳號資料 ---
+        const userSnapshot = await getDocs(collection(db, "app_users"));
+        const cloudUsers = [];
+        // 預設內建的測試帳號
+        cloudUsers.push({ id: 'shadow_id', email: 'shadow@student.edu.tw', password: 'password123' });
+        userSnapshot.forEach((doc) => {
+          cloudUsers.push({ id: doc.id, ...doc.data() });
+        });
+        setUsers(cloudUsers);
 
-  // Scroll progress
+        // --- 撈取人才履歷資料 ---
+        const talentSnapshot = await getDocs(collection(db, "resumes"));
+        const cloudTalents = [];
+        talentSnapshot.forEach((doc) => {
+          cloudTalents.push({ id: doc.id, ...doc.data() });
+        });
+
+        // 如果雲端空空如也，自動把 Mock Data 塞進雲端當初始值
+        if (cloudTalents.length === 0) {
+          for (let talent of MOCK_TALENTS) {
+            await setDoc(doc(db, "resumes", talent.id), talent);
+          }
+          setTalents(MOCK_TALENTS);
+        } else {
+          setTalents(cloudTalents);
+        }
+      } catch (error) {
+        console.error("讀取 Firebase 失敗，請確認是否選取『測試模式』並已點擊規則發布：", error);
+      }
+    };
+
+    fetchDataFromFirebase();
+  }, [view]);
+
+  // Scroll progress 監聽
   useEffect(() => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -356,40 +148,117 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 👑 【修改發布邏輯】 綁定當前登入者，建立/修改履歷後正常返回控制台
-  const handlePublish = (newTalent) => {
-    if (!currentUser) {
-      alert('請先登入帳號再發布履歷！');
+  // 🚀 3. 【註冊功能同步上傳】當有新用戶在 AuthForm 註冊時，同步上傳 Firebase
+  const handleSetUsers = async (updatedUsers) => {
+    try {
+      const newUser = updatedUsers[updatedUsers.length - 1];
+      if (newUser && newUser.email && newUser.email !== 'shadow@student.edu.tw') {
+        // 以 email 作為雲端文件的 ID，把帳號密碼存上去
+        await setDoc(doc(db, "app_users", newUser.email), {
+          email: newUser.email,
+          password: newUser.password,
+          id: newUser.id
+        });
+      }
+      setUsers(updatedUsers);
+    } catch (e) {
+      console.error("註冊帳號同步雲端失敗:", e);
+    }
+  };
+
+  // 🚀 4. 【發布/修改履歷同步上傳】（強壯安全修正版：徹底防止 undefined 或狀態未就緒導致死機）
+  const handlePublish = async (newTalent) => {
+    // 🔍 防禦 1：確保使用者處於正常的登入狀態
+    if (!currentUser || !currentUser.email) {
+      alert('登入狀態異常或已逾時，請重新登入後再發布履歷！');
       setView('login');
       return;
     }
 
-    // 建立履歷，強制使用目前登入者的 id 與 email 作為識別證
+    const userEmail = String(currentUser.email);
+    const documentId = userEmail.replace(/\./g, '_');
+
+    // 🔍 防禦 2：嚴格確保所有物件欄位都有預設值，絕對不丟 undefined 給 Firebase
     const talent = {
-      ...newTalent,
-      id: currentUser.id,
-      email: currentUser.email,
-      isApproved: false // 每次修改 or 新發布，都需要重新經過管理員審核
+      id: documentId,
+      name: newTalent.name || '未命名用戶',
+      title: newTalent.title || '未指定職稱',
+      motto: newTalent.motto || '',
+      avatar: newTalent.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+      email: userEmail,
+      yearsOfExp: Number(newTalent.yearsOfExp) || 0,
+      expectedSalary: newTalent.expectedSalary || '',
+      bio: newTalent.bio || '',
+      experience: newTalent.experience || [],
+      education: newTalent.education || [],
+      skills: newTalent.skills || [],
+      portfolio: newTalent.portfolio || [],
+      isApproved: false // 每次修改或新發布，重新送交管理員審核
     };
 
-    setTalents(prev => {
-      const exists = prev.some(t => t.id === currentUser.id);
-      if (exists) {
-        return prev.map(t => t.id === currentUser.id ? talent : t);
-      }
-      return [...prev, talent];
-    });
+    try {
+      console.log("正在嘗試發布資料至 Firebase，文件ID:", documentId, talent);
 
-    alert('履歷提交成功！已送交管理員進行上架審核。');
-    setView('dashboard'); // 提交成功後導向至個人的控制面板
+      // 指定 ID 寫入雲端 Firestore
+      await setDoc(doc(db, "resumes", documentId), talent);
+
+      // 先同步更新 React 當地狀態，防止切換頁面時畫面不同步
+      setTalents(prev => {
+        const exists = prev.some(t => t.id === documentId);
+        if (exists) return prev.map(t => t.id === documentId ? talent : t);
+        return [...prev, talent];
+      });
+
+      alert('🎉 履歷已成功發布/同步至雲端資料庫！請等待管理員進行上架審核。');
+
+      // 給予 Firebase 300 毫秒的背景寫入緩衝時間，再優雅跳轉
+      setTimeout(() => {
+        setView('dashboard');
+      }, 300);
+
+    } catch (error) {
+      console.error("🔥 Firebase 寫入失敗原因:", error);
+      alert(`儲存至雲端失敗！錯誤資訊: ${error.message}。請檢查 Firebase 安全性規則！`);
+    }
   };
 
-  // 👑 【新功能實作】刪除簡歷邏輯：將當前登入者的簡歷資料從陣列中完全移除
-  const handleUserDeleteResume = () => {
-    if (!currentUser) return;
+  // 🚀 5. 【會員自行刪除簡歷】
+  const handleUserDeleteResume = async () => {
+    if (!currentUser || !currentUser.email) return;
+    const documentId = currentUser.email.replace(/\./g, '_');
 
-    setTalents(prev => prev.filter(t => t.id !== currentUser.id));
-    alert('您的個人簡歷已成功刪除，並已從人才市集下架。');
+    try {
+      await deleteDoc(doc(db, "resumes", documentId));
+      setTalents(prev => prev.filter(t => t.id !== documentId));
+      alert('🗑️ 您的個人簡歷已成功從雲端資料庫移除，並從人才市集下架。');
+    } catch (error) {
+      console.error("刪除失敗:", error);
+    }
+  };
+
+  // 🚀 6. 【後台管理員：切換審核狀態】
+  const handleApproveToggle = async (id, approve) => {
+    try {
+      await updateDoc(doc(db, "resumes", id), { isApproved: approve });
+      setTalents(prev =>
+        prev.map(t => (t.id === id ? { ...t, isApproved: approve } : t))
+      );
+    } catch (error) {
+      console.error("審核變更失敗:", error);
+    }
+  };
+
+  // 🚀 7. 【後台管理員：永久刪除履歷】
+  const handleDeleteTalent = async (id) => {
+    if (window.confirm('確定要從雲端資料庫永久刪除這位人才的履歷嗎？')) {
+      try {
+        await deleteDoc(doc(db, "resumes", id));
+        setTalents(prev => prev.filter(t => t.id !== id));
+        alert('已成功從雲端抹除該筆履歷。');
+      } catch (error) {
+        console.error("管理員刪除失敗:", error);
+      }
+    }
   };
 
   const handleViewTalent = (talent) => {
@@ -397,24 +266,12 @@ export default function App() {
     setView('profile');
   };
 
-  const handleApproveToggle = (id, approve) => {
-    setTalents(prev =>
-      prev.map(t => (t.id === id ? { ...t, isApproved: approve } : t))
-    );
-  };
-
-  const handleDeleteTalent = (id) => {
-    if (window.confirm('確定要永久刪除這位人才的履歷嗎？')) {
-      setTalents(prev => prev.filter(t => t.id !== id));
-    }
-  };
-
-  // Filtered marketplace list (approved only)
+  // 篩選功能 (首頁市集僅顯示審核通過 isApproved === true 的人才)
   const filteredTalents = talents.filter(t => {
     if (!t.isApproved) return false;
     const q = searchQuery.toLowerCase();
     const skill = skillFilter.toLowerCase();
-    const matchesQuery = t.name.toLowerCase().includes(q) || t.title.toLowerCase().includes(q);
+    const matchesQuery = t.name?.toLowerCase().includes(q) || t.title?.toLowerCase().includes(q);
     const matchesSkill = skill ? t.skills?.some(s => s.toLowerCase().includes(skill)) : true;
     return matchesQuery && matchesSkill;
   });
@@ -436,7 +293,6 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-grow">
-        {/* 👑 傳遞 currentUser 與 setView 給導覽列 */}
         <Navbar view={view} onViewChange={setView} currentUser={currentUser} />
 
         <main className="flex-grow p-4 lg:p-8 pt-24">
@@ -473,7 +329,6 @@ export default function App() {
               {/* Talent Grid */}
               <div id="marketplace-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
                 {filteredTalents.map(t => (
-                  /* 👑 【關鍵修正】在這裡把 currentUser 傳進去給 TalentCard */
                   <TalentCard
                     key={t.id}
                     talent={t}
@@ -490,15 +345,11 @@ export default function App() {
             </>
           )}
 
-          {/* 👑 ── 登入/註冊頁面 ── */}
+          {/* ── 登入/註冊頁面 ── */}
           {view === 'login' && (
             <AuthForm
               users={users}
-              setUsers={(updatedUsers) => {
-                setUsers(updatedUsers);
-                const customUsers = updatedUsers.filter(u => u.id > 10);
-                localStorage.setItem('app_users', JSON.stringify(customUsers));
-              }}
+              setUsers={handleSetUsers}
               onLoginSuccess={(user) => {
                 setCurrentUser(user);
                 localStorage.setItem('hub_current_user', JSON.stringify(user));
@@ -508,14 +359,13 @@ export default function App() {
             />
           )}
 
-          {/* 👑 ── 個人會員主控台 ── */}
+          {/* ── 個人會員主控台 ── */}
           {view === 'dashboard' && currentUser && (
             <UserDashboard
               currentUser={currentUser}
-              myProfile={talents.find(t => t.id === currentUser.id) || null}
+              myProfile={talents.find(t => t.email === currentUser.email) || null}
               onCreateResume={() => setView('register')}
               onEditResume={() => setView('register')}
-              /* 👑 完美串接：將刪除簡歷的處理函式傳入 UserDashboard */
               onDeleteResume={handleUserDeleteResume}
               onLogout={() => {
                 setCurrentUser(null);
@@ -531,7 +381,7 @@ export default function App() {
             <RegisterForm
               onPublish={handlePublish}
               onCancel={() => setView(currentUser ? 'dashboard' : 'marketplace')}
-              initialData={talents.find(t => t.id === currentUser?.id) || null}
+              initialData={talents.find(t => t.email === currentUser?.email) || null}
             />
           )}
 
