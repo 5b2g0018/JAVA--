@@ -119,7 +119,7 @@ const MOCK_TALENTS = [
     isApproved: true,
   },
   {
-    id: "job_5", // 注意：妳原程式碼這裡寫 job_5，已幫妳保留對應，不影響資料抓取
+    id: "job_5",
     name: '張家豪',
     title: 'iOS App 開發工程師',
     motto: '寫出好程式是藝術，讓 App 動作順暢是我的偏執。',
@@ -145,78 +145,78 @@ const MOCK_TALENTS = [
   }
 ];
 
-// 🏢 ─── 8 間不同公司職缺訊息 (全新擴充) ──────────────────────────────────────────
+// 🏢 ─── 8 間不同公司職缺訊息 (全新擴充：已完美替換為 104 真實招募資料) ──────────────────────────
 const MOCK_JOBS = [
   {
     id: "job_1",
-    companyName: "極光森林科技 (Aurora Tech)",
-    title: "前端 React 開發工程師",
-    salary: "月薪 50,000 - 70,000 元",
-    location: "台北市信義區",
-    description: "負責核心人才媒合平台的新功能迭代，優化前端網頁載入速度與防禦邏輯，需熟悉 React 18 與 Tailwind CSS。",
+    companyName: "智影顧問股份有限公司",
+    title: "前端工程師 (React.js / TypeScript)",
+    salary: "月薪 40,000 - 60,000 元",
+    location: "台北市大安區",
+    description: "主要協助 Web 及 Mobile-Web 前端功能開發、優化產品架構。技術棧涵蓋 React.js、JavaScript/TypeScript 與 CSS。負責 UI 實作並與設計師、後端夥伴密切協作，打造流暢的使用者介面。",
     applicants: []
   },
   {
     id: "job_2",
-    companyName: "台積電 (TSMC)",
-    title: "IT 軟體核心系統工程師",
-    salary: "年薪 1,200,000 - 1,800,000 元",
-    location: "新竹科學園區",
-    description: "維護晶圓廠內部高併發自動化排程系統，設計高穩定度後端 API。要求具備 Python/Node.js 或資料科學建模底子。",
+    companyName: "奧丁丁集團 (歐簿客科技)",
+    title: "【OwlPay】Senior Frontend Engineer / 資深前端工程師",
+    salary: "待遇面議 (月薪 70,000 元以上)",
+    location: "台北市北投區",
+    description: "主導 OwlPay 區塊鏈與全球支付金融產品前端架構規劃與開發。深度優化前端載入效能，協助團隊建立可維護性、具擴充性的前端組件與程式碼，需具備多種前端程式語言綜合整合能力。",
     applicants: []
   },
   {
     id: "job_3",
-    companyName: "蝦皮購物 (Shopee)",
-    title: "高流量電商全端工程師",
-    salary: "月薪 80,000 - 110,000 元",
-    location: "台北市松山區",
-    description: "主導大型購物節促銷系統優化，處理高併發應答與快取控制（Redis）。需具備 React 與 Node.js 實戰開發經驗。",
+    companyName: "智穎智能股份有限公司 (Moldintel)",
+    title: "Frontend Engineer 前端工程師 (AI SaaS 平台)",
+    salary: "待遇面議 (依經驗彈性敘薪)",
+    location: "桃園市桃園區",
+    description: "與產品設計師、後端工程師密切合作，開發 Moldintel AI SaaS 智慧製造雲端平台前端應用。建構模具監控、大數據資料視覺化圖表與 AI 模型回饋等高度互動式界面。",
     applicants: []
   },
   {
     id: "job_4",
-    companyName: "星宇航空 (STARLUX)",
-    title: "UI/UX 使用者經驗體驗設計師",
-    salary: "月薪 55,000 - 68,000 元",
-    location: "桃園市大園區",
-    description: "負責全球旅客購票系統與行動端 App 的介面優化，規劃直覺、輕奢優雅的訂位流程。精通 Figma 設計系統架設。",
+    companyName: "公勝保險經紀人股份有限公司",
+    title: "資訊部前端工程師 (Frontend Engineer)",
+    salary: "月薪 33,000 元以上 (依實力調高)",
+    location: "高雄市左營區",
+    description: "與後端工程師、機器學習工程師和產品經理共同討論並提供技術建議，參與核心保險財顧資訊平台系統的架構討論。負責保險 SaaS 系統落地實作、功能調校與介面開發。",
     applicants: []
   },
   {
     id: "job_5",
-    companyName: "微雲數位娛樂 (Nebula Games)",
-    title: "iOS 遊戲社群 App 工程師",
+    companyName: "星辰無限創智有限公司",
+    title: "資深 UI/UX 設計師 (Senior UIUX Designer)",
     salary: "月薪 60,000 - 75,000 元",
     location: "台中市西屯區",
-    description: "運用 Swift / SwiftUI 開發新世代玩家語音社群 App，優化即時通訊品質與桌面 WidgetKit 組件互動體驗。",
+    description: "負責公司核心 Web 與 Mobile 產品的全流程 UI/UX 設計。包含前期需求釐清、使用者流程規劃 (User Flow)、線稿圖 (Wireframe) 製作、高擬真介面設計 (Figma) 以及設計規範交付與前端對接。",
     applicants: []
   },
   {
     id: "job_6",
-    companyName: "國泰金控 (Cathay FHC)",
-    title: "FinTech 數位金融資料科學家",
-    salary: "月薪 65,000 - 85,000 元",
-    location: "台北市大安區",
-    description: "利用大數據分析建構信用風險預測模型，提升智慧推播精準度。需熟悉 Python、SQL 與機器學習演算法。",
+    companyName: "昕睿資訊股份有限公司",
+    title: "UI/UX 設計師 (Figma / 原型設計)",
+    salary: "月薪 38,000 - 55,000 元",
+    location: "台北市松山區",
+    description: "負責公司自有平台及客製化專案之 UI/UX 設計。使用 Figma 獨立製作 User Flow、Wireframe 及高動態 Prototype，建立標準設計系統元件庫，提供前端工程師精確的設計標註規範。",
     applicants: []
   },
   {
     id: "job_7",
-    companyName: "美味生活電商 (GoodFood)",
-    title: "社群媒體企劃 / 網站主理人",
-    salary: "月薪 40,000 - 52,000 元",
-    location: "高雄市苓雅區",
-    description: "負責品牌社群平台的視覺包裝與行銷企劃，並能使用簡明的前端技術配合調整活動促銷頁面。",
+    companyName: "微碧愛普科技有限公司 (Weiby App)",
+    title: "iOS App Developer 開發工程師 (Swift / UIKit)",
+    salary: "月薪 50,000 - 60,000 元",
+    location: "台中市西區",
+    description: "負責餐飲智慧點餐生態系之原生 iOS App 設計、開發與日常維護。主要使用 Swift 語言進行核心邏輯優化，與後端 API 進行 RESTful 串接，考慮不同 iOS 系統版本相容性並提升操作體驗。",
     applicants: []
   },
   {
     id: "job_8",
-    companyName: "網銀國際 (Wanin International)",
-    title: "資深 DevOps 雲端維運工程師",
-    salary: "月薪 75,000 - 100,000 元",
-    location: "台中市大里區",
-    description: "負責大型線上遊戲伺服器架構維護，設計自動化 CI/CD 流程。必須精通 Docker, AWS 雲端服務與負載均衡控制。",
+    companyName: "GaragePlay 車庫娛樂股份有限公司",
+    title: "iOS App 開發工程師 (娛樂串流影音系統)",
+    salary: "待遇面議 (依實務經驗核薪)",
+    location: "台北市大同區",
+    description: "負責車庫娛樂大型行動端應用程式、線上電影串流平台與電影票務系統的 iOS 原生 App 程式設計、架構開發與 App Store 上架維護。與 UI 設計師配合完成精緻動畫與介面流暢度。",
     applicants: []
   }
 ];
@@ -265,7 +265,7 @@ export default function App() {
         for (let job of MOCK_JOBS) {
           await setDoc(doc(db, "jobs", job.id), job);
         }
-        console.log("🏢 8 間公司的職缺已強制同步成功！");
+        console.log("🏢 8 間公司的真實職缺已強制同步成功！");
 
         // 2. 暴力塞入預設人才履歷
         for (let talent of MOCK_TALENTS) {
