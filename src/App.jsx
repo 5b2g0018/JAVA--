@@ -119,7 +119,7 @@ const MOCK_TALENTS = [
     isApproved: true,
   },
   {
-    id: "job_5",
+    id: "job_5", // 注意：妳原程式碼這裡寫 job_5，已幫妳保留對應，不影響資料抓取
     name: '張家豪',
     title: 'iOS App 開發工程師',
     motto: '寫出好程式是藝術，讓 App 動作順暢是我的偏執。',
@@ -228,6 +228,9 @@ export default function App() {
   const [modalTalent, setModalTalent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
+
+  // 🎯 核心修復：新增 subTab 狀態，用來判定目前是要看人才還是職缺（預設為人才 talents）
+  const [subTab, setSubTab] = useState('talents');
 
   // ☁️ 雲端狀態：使用者帳號、人才履歷清單、🏢 職缺清單
   const [users, setUsers] = useState([]);
@@ -377,12 +380,12 @@ export default function App() {
 
     try {
       const targetJob = jobs.find(j => j.id === jobId);
-      if (targetJob.applicants.includes(currentUser.email)) {
+      if (targetJob.applicants && targetJob.applicants.includes(currentUser.email)) {
         alert("您已經投遞過這家公司囉！");
         return;
       }
 
-      const updatedApplicants = [...targetJob.applicants, currentUser.email];
+      const updatedApplicants = [...(targetJob.applicants || []), currentUser.email];
 
       // 更新雲端 Firebase 資料
       await updateDoc(doc(db, "jobs", jobId), { applicants: updatedApplicants });
@@ -431,11 +434,6 @@ export default function App() {
     }
   };
 
-  const handleViewTalent = (talent) => {
-    setSelectedTalent(talent);
-    setView('profile');
-  };
-
   // 篩選功能 (首頁市集僅顯示審核通過 isApproved === true 的人才)
   const filteredTalents = talents.filter(t => {
     if (!t.isApproved) return false;
@@ -444,6 +442,12 @@ export default function App() {
     const matchesQuery = t.name?.toLowerCase().includes(q) || t.title?.toLowerCase().includes(q);
     const matchesSkill = skill ? t.skills?.some(s => s.toLowerCase().includes(skill)) : true;
     return matchesQuery && matchesSkill;
+  });
+
+  // 職缺關鍵字篩選
+  const filteredJobs = jobs.filter(j => {
+    const q = searchQuery.toLowerCase();
+    return j.companyName?.toLowerCase().includes(q) || j.title?.toLowerCase().includes(q) || j.description?.toLowerCase().includes(q);
   });
 
   return (
@@ -472,44 +476,100 @@ export default function App() {
             <>
               <Hero onViewChange={setView} currentUser={currentUser} />
 
+              {/* 🎯 頁籤切換按鈕組：尋找人才 vs 尋找職缺 */}
+              <div className="flex justify-center gap-4 my-6">
+                <button
+                  onClick={() => setSubTab('talents')}
+                  className={`px-8 py-3 rounded-xl font-bold text-base shadow-lg flex items-center gap-2 transition-all duration-300 ${subTab === 'talents' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/20 scale-105' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'}`}
+                >
+                  🔍 尋找人才
+                </button>
+                <button
+                  onClick={() => setSubTab('jobs')}
+                  className={`px-8 py-3 rounded-xl font-bold text-base shadow-lg flex items-center gap-2 transition-all duration-300 ${subTab === 'jobs' ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/20 scale-105' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'}`}
+                >
+                  🏢 尋找職缺
+                </button>
+              </div>
+
               {/* Search / Filter Bar */}
               <div className="my-8 flex flex-col md:flex-row gap-4 items-center max-w-4xl mx-auto w-full px-2">
                 <div className="relative flex-1 w-full">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
                   <input
                     type="text"
-                    placeholder="搜尋人才名稱或職稱…"
+                    placeholder={subTab === 'talents' ? "搜尋人才名稱或職稱…" : "搜尋公司名稱、職缺關鍵字…"}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/10 transition-all"
                   />
                 </div>
-                <div className="relative flex-1 w-full">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">🏷️</span>
-                  <input
-                    type="text"
-                    placeholder="過濾技能（如 React、Python…）"
-                    value={skillFilter}
-                    onChange={e => setSkillFilter(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/10 transition-all"
-                  />
-                </div>
+                {subTab === 'talents' && (
+                  <div className="relative flex-1 w-full">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">🏷️</span>
+                    <input
+                      type="text"
+                      placeholder="過濾技能（如 React、Python…）"
+                      value={skillFilter}
+                      onChange={e => setSkillFilter(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Talent Grid */}
-              <div id="marketplace-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full">
-                {filteredTalents.map(t => (
-                  <TalentCard
-                    key={t.id}
-                    talent={t}
-                    currentUser={currentUser}
-                    onViewProfile={() => setModalTalent(t)}
-                  />
-                ))}
-                {filteredTalents.length === 0 && (
-                  <p className="text-center col-span-full text-slate-500 py-20">
-                    😕 目前無符合條件的人才。
-                  </p>
+              {/* 🎯 根據當前選擇的 subTab 切換渲染 Talent 還是 Jobs */}
+              <div className="max-w-7xl mx-auto w-full">
+                {subTab === 'talents' ? (
+                  /* 👤 人才市集卡片區塊 */
+                  <div id="marketplace-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredTalents.map(t => (
+                      <TalentCard
+                        key={t.id}
+                        talent={t}
+                        currentUser={currentUser}
+                        onViewProfile={() => setModalTalent(t)}
+                      />
+                    ))}
+                    {filteredTalents.length === 0 && (
+                      <p className="text-center col-span-full text-slate-500 py-20">😕 目前無符合條件的人才。</p>
+                    )}
+                  </div>
+                ) : (
+                  /* 🏢 公司職缺卡片區塊 */
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredJobs.map(job => (
+                      <div key={job.id} className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 shadow-xl hover:shadow-cyan-500/5 transition-all duration-300 flex flex-col justify-between group">
+                        <div>
+                          <div className="flex justify-between items-start mb-3">
+                            <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium">
+                              熱門職缺
+                            </span>
+                            <span className="text-sm text-slate-500 flex items-center gap-1">📍 {job.location}</span>
+                          </div>
+                          <h3 className="text-xl font-bold text-slate-100 group-hover:text-cyan-400 transition-colors mb-1">{job.title}</h3>
+                          <p className="text-sm text-slate-400 font-medium mb-4">🏢 {job.companyName}</p>
+                          <p className="text-sm text-slate-500 line-clamp-3 mb-6 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60">{job.description}</p>
+                        </div>
+                        <div className="flex justify-between items-center pt-4 border-t border-slate-800/60">
+                          <div>
+                            <p className="text-xs text-slate-500">預估薪資</p>
+                            <p className="text-base font-bold text-emerald-400">{job.salary}</p>
+                          </div>
+                          <button
+                            onClick={() => handleApplyJob(job.id)}
+                            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${job.applicants?.includes(currentUser?.email) ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-400 hover:to-blue-400 shadow-md shadow-cyan-500/10 active:scale-95'}`}
+                            disabled={job.applicants?.includes(currentUser?.email)}
+                          >
+                            {job.applicants?.includes(currentUser?.email) ? '✓ 已投遞履歷' : '🚀 立即投遞'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {filteredJobs.length === 0 && (
+                      <p className="text-center col-span-full text-slate-500 py-20">😕 找不到相符的公司職缺。</p>
+                    )}
+                  </div>
                 )}
               </div>
             </>
